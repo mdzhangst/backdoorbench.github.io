@@ -5632,10 +5632,23 @@
         <hr>
 
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
-            <p>If you would like to report your results here, please follow instructions at <a href=""
-                    target="_blank">Google
-                    Form</a> to make a submission. The results will be posted after we check the model validity (expect
-                to take about a week).</p>
+            <ul>
+                <li>For <b>sig</b> attack, since this method is a clean-label attack, if the poisoning rate is higher
+                    than the
+                    percentage of the
+                    target class, this attack method is non-applicable.
+                </li>
+                <li>For <b>inputaware</b> attack, since two generators are used in this attack, sometimes the training
+                    of
+                    these two generators
+                    may break due to the training instability. In that case, we may change the random seed and replicate
+                    the attack.</li>
+                <li>
+                    For <b>Fine Pruning, NC, DBD, ANP</b> defenses, the result of these method are running and will be comming
+                    soon.
+                </li>
+
+            </ul>
         </div>
     </div>
 
