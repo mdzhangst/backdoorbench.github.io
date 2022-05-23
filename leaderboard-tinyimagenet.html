@@ -76,7 +76,23 @@
         <div class="row">
 
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
-                <p>The results will be coming soon...</p>
+                <p>The TinyImageNet leaderboard compiles results from different backdoor defense methods against different
+                    backdoor
+                    attack methods. For different poisoning ratio settings, please use the tabs below to navigate to the
+                    corresponding leaderboard, which measures the robustness of a model.</p>
+                
+                <p>
+                    <b>Metric:</b>
+                <ul>
+                    <li><b>CA</b> (<b>C</b>lean <b>A</b>ccuracy): The ratio of clean samples that are identified as
+                        their ground-truth classes,, which reflects the healthiness of a model.</li>
+                    <li><b>ASR</b> (<b>A</b>ttack <b>S</b>uccess <b>R</b>ate): The ratio of poisoned samples that are
+                        identified as the target class, which manifests the immunity of a model.</li>
+                    <li><b>RA</b> (<b>R</b>obust <b>A</b>ccuracy): The ratio of poisoned samples that are identified as
+                        their ground-truth classes, which measures the robustness of a model.</li>
+                
+                </ul>
+                </p>
             </div>
 
             <br />
@@ -128,6 +144,9 @@
                                 <colgroup span="3" class="wBackground"></colgroup>
                                 <colgroup span="3"></colgroup>
                                 <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
+                                <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
                                 <thead>
                                     <tr>
                                         <th>　</th>
@@ -139,6 +158,9 @@
                                         <th class="sorttable_nosort" scope="col" colspan="3">ABL</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">NAD</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">Spectral Signatural</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">DBD</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">NC</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">ANP</th>
                                     </tr>
                                     <tr>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">
@@ -166,8 +188,18 @@
                                         <th scope="col">CA(%)</th>
                                         <th scope="col">ASR(%)</th>
                                         <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
                                     </tr>
                                 </thead>
+
 
                                 <tbody>
                                     <tr>
@@ -581,70 +613,70 @@
                                     <tr>
                                         <td>efficientnet_b3</td>
                                         <td>badnet</td>
-                                        <td>0.4469</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.36049998</td>
-                                        <td>0.99899495</td>
-                                        <td>0</td>
-                                        <td>0.0262</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.4386</td>
-                                        <td>0.00633166</td>
-                                        <td>0.41447237</td>
+                                        <td>44.69%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>36.05%</td>
+                                        <td>99.90%</td>
+                                        <td>0.00%</td>
+                                        <td>2.62%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>43.86%</td>
+                                        <td>0.63%</td>
+                                        <td>41.45%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.44039997</td>
-                                        <td>0.02241206</td>
-                                        <td>0.42190954</td>
-                                        <td>0.4224</td>
-                                        <td>1</td>
-                                        <td>0</td>
+                                        <td>44.04%</td>
+                                        <td>2.24%</td>
+                                        <td>42.19%</td>
+                                        <td>42.24%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.42809999</td>
-                                        <td>0.00713568</td>
-                                        <td>0.36522612</td>
+                                        <td>42.81%</td>
+                                        <td>0.71%</td>
+                                        <td>36.52%</td>
                                     </tr>
                                     <tr>
                                         <td>efficientnet_b3</td>
                                         <td>blended</td>
-                                        <td>0.3944</td>
-                                        <td>0.99778894</td>
-                                        <td>0.00120603</td>
-                                        <td>0.3646</td>
-                                        <td>0.99889445</td>
-                                        <td>0.00050251</td>
-                                        <td>0.08109999</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.42819998</td>
-                                        <td>0.87939698</td>
-                                        <td>0.04663317</td>
+                                        <td>39.44%</td>
+                                        <td>99.78%</td>
+                                        <td>0.12%</td>
+                                        <td>36.46%</td>
+                                        <td>99.89%</td>
+                                        <td>0.05%</td>
+                                        <td>8.11%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>42.82%</td>
+                                        <td>87.94%</td>
+                                        <td>4.66%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.4253</td>
-                                        <td>0.70834172</td>
-                                        <td>0.09819096</td>
-                                        <td>0.42769998</td>
-                                        <td>0.99648237</td>
-                                        <td>0.00180905</td>
+                                        <td>42.53%</td>
+                                        <td>70.83%</td>
+                                        <td>9.82%</td>
+                                        <td>42.77%</td>
+                                        <td>99.65%</td>
+                                        <td>0.18%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.3883</td>
-                                        <td>0.89788944</td>
-                                        <td>0.05286432</td>
+                                        <td>38.83%</td>
+                                        <td>89.79%</td>
+                                        <td>5.29%</td>
                                     </tr>
                                     <tr>
                                         <td>efficientnet_b3</td>
@@ -683,58 +715,58 @@
                                     <tr>
                                         <td>efficientnet_b3</td>
                                         <td>ssba</td>
-                                        <td>0.454</td>
-                                        <td>0.99165829</td>
-                                        <td>0.00492462</td>
-                                        <td>0.35099998</td>
-                                        <td>0.98984921</td>
-                                        <td>0.00452261</td>
-                                        <td>0.0109</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.44779998</td>
-                                        <td>0.11889447</td>
-                                        <td>0.27065328</td>
+                                        <td>45.40%</td>
+                                        <td>99.17%</td>
+                                        <td>0.49%</td>
+                                        <td>35.10%</td>
+                                        <td>98.98%</td>
+                                        <td>0.45%</td>
+                                        <td>1.09%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>44.78%</td>
+                                        <td>11.89%</td>
+                                        <td>27.07%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.44979998</td>
-                                        <td>0.05507538</td>
-                                        <td>0.28532663</td>
-                                        <td>0.40759999</td>
-                                        <td>0.97849244</td>
-                                        <td>0.01035176</td>
+                                        <td>44.98%</td>
+                                        <td>5.51%</td>
+                                        <td>28.53%</td>
+                                        <td>40.76%</td>
+                                        <td>97.85%</td>
+                                        <td>1.04%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.4515</td>
-                                        <td>0.47527638</td>
-                                        <td>0.24150753</td>
+                                        <td>45.15%</td>
+                                        <td>47.53%</td>
+                                        <td>24.15%</td>
                                     </tr>
                                     <tr>
                                         <td>efficientnet_b3</td>
                                         <td>wanet</td>
-                                        <td>0.482</td>
-                                        <td>0.98854271</td>
-                                        <td>0.0080402</td>
-                                        <td>0.3513</td>
-                                        <td>0.96271354</td>
-                                        <td>0.01949749</td>
-                                        <td>0.0051</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.42109999</td>
-                                        <td>0.00351759</td>
-                                        <td>0.37477386</td>
+                                        <td>48.20%</td>
+                                        <td>98.85%</td>
+                                        <td>0.80%</td>
+                                        <td>35.13%</td>
+                                        <td>96.27%</td>
+                                        <td>1.95%</td>
+                                        <td>0.51%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>42.11%</td>
+                                        <td>0.35%</td>
+                                        <td>37.48%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.42729998</td>
-                                        <td>0.06934673</td>
-                                        <td>0.3247236</td>
+                                        <td>42.73%</td>
+                                        <td>6.93%</td>
+                                        <td>32.47%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
@@ -751,104 +783,104 @@
                                     <tr>
                                         <td>efficientnet_b3</td>
                                         <td>inputaware</td>
-                                        <td>0.005</td>
-                                        <td>1</td>
-                                        <td>0</td>
+                                        <td>0.50%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.005</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>0.005</td>
-                                        <td>1</td>
-                                        <td>0</td>
+                                        <td>0.50%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
+                                        <td>0.50%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.005</td>
-                                        <td>1</td>
-                                        <td>0</td>
-                                        <td>NA</td>
-                                        <td>NA</td>
-                                        <td>NA</td>
-                                        <td>NA</td>
+                                        <td>0.50%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.005</td>
-                                        <td>1</td>
-                                        <td>0</td>
+                                        <td>NA</td>
+                                        <td>NA</td>
+                                        <td>NA</td>
+                                        <td>NA</td>
+                                        <td>0.50%</td>
+                                        <td>100.00%</td>
+                                        <td>0.00%</td>
                                     </tr>
                                     <tr>
                                         <td>mobilenet_v3_large</td>
                                         <td>badnet</td>
-                                        <td>0.3623</td>
-                                        <td>0.97005025</td>
-                                        <td>0.01507538</td>
-                                        <td>0.30599999</td>
-                                        <td>0.99989951</td>
-                                        <td>0.0001005</td>
-                                        <td>0.2084</td>
-                                        <td>0.99547738</td>
-                                        <td>0.00110553</td>
-                                        <td>0.41709998</td>
-                                        <td>0.00552764</td>
-                                        <td>0.40834171</td>
-                                        <td>0.011</td>
-                                        <td>0</td>
-                                        <td>0.01105528</td>
-                                        <td>0.4305</td>
-                                        <td>0.00964824</td>
-                                        <td>0.4246231</td>
-                                        <td>0.31909999</td>
-                                        <td>0.99929649</td>
-                                        <td>0.00030151</td>
+                                        <td>36.23%</td>
+                                        <td>97.01%</td>
+                                        <td>1.51%</td>
+                                        <td>30.60%</td>
+                                        <td>99.99%</td>
+                                        <td>0.01%</td>
+                                        <td>20.84%</td>
+                                        <td>99.55%</td>
+                                        <td>0.11%</td>
+                                        <td>41.71%</td>
+                                        <td>0.55%</td>
+                                        <td>40.83%</td>
+                                        <td>1.10%</td>
+                                        <td>0.00%</td>
+                                        <td>1.11%</td>
+                                        <td>43.05%</td>
+                                        <td>0.96%</td>
+                                        <td>42.46%</td>
+                                        <td>31.91%</td>
+                                        <td>99.93%</td>
+                                        <td>0.03%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.33239999</td>
-                                        <td>0.00974874</td>
-                                        <td>0.3198995</td>
+                                        <td>33.24%</td>
+                                        <td>0.97%</td>
+                                        <td>31.99%</td>
                                     </tr>
                                     <tr>
                                         <td>mobilenet_v3_large</td>
                                         <td>blended</td>
-                                        <td>0.3826</td>
-                                        <td>0.99035176</td>
-                                        <td>0.00532663</td>
-                                        <td>0.24259999</td>
-                                        <td>0.99437183</td>
-                                        <td>0.00170854</td>
-                                        <td>0.2289</td>
-                                        <td>0.98763818</td>
-                                        <td>0.0038191</td>
-                                        <td>0.40469998</td>
-                                        <td>0.48572865</td>
-                                        <td>0.12261306</td>
+                                        <td>38.26%</td>
+                                        <td>99.04%</td>
+                                        <td>0.53%</td>
+                                        <td>24.26%</td>
+                                        <td>99.44%</td>
+                                        <td>0.17%</td>
+                                        <td>22.89%</td>
+                                        <td>98.76%</td>
+                                        <td>0.38%</td>
+                                        <td>40.47%</td>
+                                        <td>48.57%</td>
+                                        <td>12.26%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.41419998</td>
-                                        <td>0.30954772</td>
-                                        <td>0.1601005</td>
-                                        <td>0.31819999</td>
-                                        <td>0.99165827</td>
-                                        <td>0.00311558</td>
+                                        <td>41.42%</td>
+                                        <td>30.95%</td>
+                                        <td>16.01%</td>
+                                        <td>31.82%</td>
+                                        <td>99.17%</td>
+                                        <td>0.31%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.35189998</td>
-                                        <td>0.35869345</td>
-                                        <td>0.13949749</td>
+                                        <td>35.19%</td>
+                                        <td>35.87%</td>
+                                        <td>13.95%</td>
                                     </tr>
                                     <tr>
                                         <td>mobilenet_v3_large</td>
@@ -887,36 +919,36 @@
                                     <tr>
                                         <td>mobilenet_v3_large</td>
                                         <td>ssba</td>
-                                        <td>0.3937</td>
-                                        <td>0.98130653</td>
-                                        <td>0.00844221</td>
-                                        <td>0.25040001</td>
-                                        <td>0.98341709</td>
-                                        <td>0.00482412</td>
-                                        <td>0.24049999</td>
-                                        <td>0.30070353</td>
-                                        <td>0.06301507</td>
-                                        <td>0.40239999</td>
-                                        <td>0.78854269</td>
-                                        <td>0.09005025</td>
+                                        <td>39.37%</td>
+                                        <td>98.13%</td>
+                                        <td>0.84%</td>
+                                        <td>25.04%</td>
+                                        <td>98.34%</td>
+                                        <td>0.48%</td>
+                                        <td>24.05%</td>
+                                        <td>30.07%</td>
+                                        <td>6.30%</td>
+                                        <td>40.24%</td>
+                                        <td>78.85%</td>
+                                        <td>9.01%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.40779999</td>
-                                        <td>0.74050248</td>
-                                        <td>0.11055277</td>
-                                        <td>0.30339998</td>
-                                        <td>0.91105527</td>
-                                        <td>0.0281407</td>
+                                        <td>40.78%</td>
+                                        <td>74.05%</td>
+                                        <td>11.06%</td>
+                                        <td>30.34%</td>
+                                        <td>91.11%</td>
+                                        <td>2.81%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.35779998</td>
-                                        <td>0.96432161</td>
-                                        <td>0.01396985</td>
+                                        <td>35.78%</td>
+                                        <td>96.43%</td>
+                                        <td>1.40%</td>
                                     </tr>
                                     <tr>
                                         <td>mobilenet_v3_large</td>
@@ -955,104 +987,104 @@
                                     <tr>
                                         <td>mobilenet_v3_large</td>
                                         <td>inputaware</td>
-                                        <td>0.4833</td>
-                                        <td>0.9959799</td>
-                                        <td>0.00231156</td>
-                                        <td>0.24839999</td>
-                                        <td>0.97266328</td>
-                                        <td>0.00733668</td>
-                                        <td>0.1971</td>
-                                        <td>0.99497485</td>
-                                        <td>0.00070352</td>
-                                        <td>0.33249998</td>
-                                        <td>0.00211055</td>
-                                        <td>0.1003015</td>
+                                        <td>48.33%</td>
+                                        <td>99.60%</td>
+                                        <td>0.23%</td>
+                                        <td>24.84%</td>
+                                        <td>97.27%</td>
+                                        <td>0.73%</td>
+                                        <td>19.71%</td>
+                                        <td>99.50%</td>
+                                        <td>0.07%</td>
+                                        <td>33.25%</td>
+                                        <td>0.21%</td>
+                                        <td>10.03%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.34919998</td>
-                                        <td>0.0039196</td>
-                                        <td>0.10251256</td>
-                                        <td>0.29319999</td>
-                                        <td>0.97507536</td>
-                                        <td>0.00592965</td>
+                                        <td>34.92%</td>
+                                        <td>0.39%</td>
+                                        <td>10.25%</td>
+                                        <td>29.32%</td>
+                                        <td>97.51%</td>
+                                        <td>0.59%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.48319998</td>
-                                        <td>0.99597991</td>
-                                        <td>0.00231156</td>
+                                        <td>48.32%</td>
+                                        <td>99.60%</td>
+                                        <td>0.23%</td>
                                     </tr>
                                     <tr>
                                         <td>densenet161</td>
                                         <td>badnet</td>
-                                        <td>0.5006</td>
-                                        <td>0.99969849</td>
-                                        <td>0.00030151</td>
-                                        <td>0.36359999</td>
-                                        <td>0.99979901</td>
-                                        <td>0.0001005</td>
-                                        <td>0.4614</td>
-                                        <td>0.85738695</td>
-                                        <td>0.08582915</td>
-                                        <td>0.49489999</td>
-                                        <td>0.7695477</td>
-                                        <td>0.15527637</td>
+                                        <td>50.06%</td>
+                                        <td>99.97%</td>
+                                        <td>0.03%</td>
+                                        <td>36.36%</td>
+                                        <td>99.98%</td>
+                                        <td>0.01%</td>
+                                        <td>46.14%</td>
+                                        <td>85.74%</td>
+                                        <td>8.58%</td>
+                                        <td>49.49%</td>
+                                        <td>76.95%</td>
+                                        <td>15.53%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.46419999</td>
-                                        <td>0.99979901</td>
-                                        <td>0.00020101</td>
+                                        <td>46.42%</td>
+                                        <td>99.98%</td>
+                                        <td>0.02%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.46239999</td>
-                                        <td>0.00150754</td>
-                                        <td>0.45306534</td>
+                                        <td>46.24%</td>
+                                        <td>0.15%</td>
+                                        <td>45.31%</td>
                                     </tr>
                                     <tr>
                                         <td>densenet161</td>
                                         <td>blended</td>
-                                        <td>0.4977</td>
-                                        <td>0.99738693</td>
-                                        <td>0.00190955</td>
-                                        <td>0.36839998</td>
-                                        <td>0.99437183</td>
-                                        <td>0.00301508</td>
-                                        <td>0.49469998</td>
-                                        <td>0.99467337</td>
-                                        <td>0.00341709</td>
-                                        <td>0.49269998</td>
-                                        <td>0.95839196</td>
-                                        <td>0.03005025</td>
+                                        <td>49.77%</td>
+                                        <td>99.74%</td>
+                                        <td>0.19%</td>
+                                        <td>36.84%</td>
+                                        <td>99.44%</td>
+                                        <td>0.30%</td>
+                                        <td>49.47%</td>
+                                        <td>99.47%</td>
+                                        <td>0.34%</td>
+                                        <td>49.27%</td>
+                                        <td>95.84%</td>
+                                        <td>3.01%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.46709999</td>
-                                        <td>0.99226129</td>
-                                        <td>0.00452261</td>
+                                        <td>46.71%</td>
+                                        <td>99.23%</td>
+                                        <td>0.45%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.46239999</td>
-                                        <td>0.00522613</td>
-                                        <td>0.25407034</td>
+                                        <td>46.24%</td>
+                                        <td>0.52%</td>
+                                        <td>25.41%</td>
                                     </tr>
                                     <tr>
                                         <td>densenet161</td>
@@ -1091,43 +1123,43 @@
                                     <tr>
                                         <td>densenet161</td>
                                         <td>ssba</td>
-                                        <td>0.497</td>
-                                        <td>0.99065327</td>
-                                        <td>0.00592965</td>
-                                        <td>0.37369999</td>
-                                        <td>0.97768843</td>
-                                        <td>0.01045226</td>
-                                        <td>0.49679998</td>
-                                        <td>0.98542714</td>
-                                        <td>0.00874372</td>
-                                        <td>0.49079999</td>
-                                        <td>0.86552763</td>
-                                        <td>0.08361809</td>
+                                        <td>49.70%</td>
+                                        <td>99.07%</td>
+                                        <td>0.59%</td>
+                                        <td>37.37%</td>
+                                        <td>97.77%</td>
+                                        <td>1.05%</td>
+                                        <td>49.68%</td>
+                                        <td>98.54%</td>
+                                        <td>0.87%</td>
+                                        <td>49.08%</td>
+                                        <td>86.55%</td>
+                                        <td>8.36%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.45839998</td>
-                                        <td>0.98150754</td>
-                                        <td>0.00954774</td>
+                                        <td>45.84%</td>
+                                        <td>98.15%</td>
+                                        <td>0.95%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.46779999</td>
-                                        <td>0.00482412</td>
-                                        <td>0.37427136</td>
+                                        <td>46.78%</td>
+                                        <td>0.48%</td>
+                                        <td>37.43%</td>
                                     </tr>
                                     <tr>
                                         <td>densenet161</td>
                                         <td>wanet</td>
-                                        <td>0.5111</td>
-                                        <td>0.99527638</td>
-                                        <td>0.00341709</td>
+                                        <td>51.11%</td>
+                                        <td>99.53%</td>
+                                        <td>0.34%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
@@ -1159,36 +1191,36 @@
                                     <tr>
                                         <td>densenet161</td>
                                         <td>inputaware</td>
-                                        <td>0.5265</td>
-                                        <td>0.99778894</td>
-                                        <td>0.00201005</td>
-                                        <td>0.36149999</td>
-                                        <td>0.99889445</td>
-                                        <td>0.00100503</td>
-                                        <td>0.48899999</td>
-                                        <td>0.00934673</td>
-                                        <td>0.36010051</td>
-                                        <td>0.52770001</td>
-                                        <td>0.00532663</td>
-                                        <td>0.35718593</td>
+                                        <td>52.65%</td>
+                                        <td>99.78%</td>
+                                        <td>0.20%</td>
+                                        <td>36.15%</td>
+                                        <td>99.89%</td>
+                                        <td>0.10%</td>
+                                        <td>48.90%</td>
+                                        <td>0.93%</td>
+                                        <td>36.01%</td>
+                                        <td>52.77%</td>
+                                        <td>0.53%</td>
+                                        <td>35.72%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.44709998</td>
-                                        <td>0.99879396</td>
-                                        <td>0.00090452</td>
+                                        <td>44.71%</td>
+                                        <td>99.88%</td>
+                                        <td>0.09%</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
                                         <td>NA</td>
-                                        <td>0.48249999</td>
-                                        <td>0.00130653</td>
-                                        <td>0.19246231</td>
+                                        <td>48.25%</td>
+                                        <td>0.13%</td>
+                                        <td>19.25%</td>
                                     </tr>
                                     <tr>
                                         <td>densenet161</td>
@@ -1245,6 +1277,9 @@
                                 <colgroup span="3" class="wBackground"></colgroup>
                                 <colgroup span="3"></colgroup>
                                 <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
+                                <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
                                 <thead>
                                     <tr>
                                         <th>　</th>
@@ -1256,12 +1291,24 @@
                                         <th class="sorttable_nosort" scope="col" colspan="3">ABL</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">NAD</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">Spectral Signatural</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">DBD</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">NC</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">ANP</th>
                                     </tr>
                                     <tr>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">
                                             Targeted&nbsp;Model</th>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">Backdoor&nbsp;Attack&darr;
                                         </th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
                                         <th scope="col">CA(%)</th>
                                         <th scope="col">ASR(%)</th>
                                         <th scope="col">RA(%)</th>
@@ -3478,6 +3525,9 @@
                                 <colgroup span="3" class="wBackground"></colgroup>
                                 <colgroup span="3"></colgroup>
                                 <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
+                                <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
                                 <thead>
                                     <tr>
                                         <th>　</th>
@@ -3489,12 +3539,24 @@
                                         <th class="sorttable_nosort" scope="col" colspan="3">ABL</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">NAD</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">Spectral Signatural</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">DBD</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">NC</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">ANP</th>
                                     </tr>
                                     <tr>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">
                                             Targeted&nbsp;Model</th>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">Backdoor&nbsp;Attack&darr;
                                         </th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
                                         <th scope="col">CA(%)</th>
                                         <th scope="col">ASR(%)</th>
                                         <th scope="col">RA(%)</th>
@@ -4593,6 +4655,9 @@
                                 <colgroup span="3" class="wBackground"></colgroup>
                                 <colgroup span="3"></colgroup>
                                 <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
+                                <colgroup span="3" class="wBackground"></colgroup>
+                                <colgroup span="3"></colgroup>
                                 <thead>
                                     <tr>
                                         <th>　</th>
@@ -4604,6 +4669,9 @@
                                         <th class="sorttable_nosort" scope="col" colspan="3">ABL</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">NAD</th>
                                         <th class="sorttable_nosort" scope="col" colspan="3">Spectral Signatural</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">DBD</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">NC</th>
+                                        <th class="sorttable_nosort" scope="col" colspan="3">ANP</th>
                                     </tr>
                                     <tr>
                                         <th class="sorttable_nosort" scope="col" rowspan="2">
@@ -4631,9 +4699,17 @@
                                         <th scope="col">CA(%)</th>
                                         <th scope="col">ASR(%)</th>
                                         <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
+                                        <th scope="col">CA(%)</th>
+                                        <th scope="col">ASR(%)</th>
+                                        <th scope="col">RA(%)</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
                                     <tr>
                                         <td>preactresnet18</td>
