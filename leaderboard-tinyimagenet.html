@@ -514,11 +514,21 @@
         <hr>
 
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
-            <p>If you would like to report your results here, please follow instructions at <a href=""
-                    target="_blank">Google
-                    Form</a> to make a submission. The results will be posted after we check the model validity (expect
-                to take
-                about a week).</p>
+
+            <ul>
+                <li>
+                    <b>NA</b> means non-applicable.
+                </li>
+
+                <li>
+                    <b>TBD</b> means to be declared, the results of these methods are running and will be comming soon.
+                </li>
+                <li>For <b>SIG</b> and <b>LC</b> attack, since they are clean-label attack, if poisoning rate is higher
+                    than the percentage of the target class, these attack methods is non-applicable.
+                </li>
+                <li>For <b>ANP</b> defense, since the VGG19 model we used does not have batch normalization layer, ANP is non-applicable for VGG19.
+                </li>
+            </ul>
         </div>
     </div>
 

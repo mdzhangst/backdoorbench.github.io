@@ -519,23 +519,20 @@
         <hr>
 
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 thumb">
+
             <ul>
-                <li>For <b>sig</b> attack, since this method is a clean-label attack, if the poisoning rate is higher
-                    than the
-                    percentage of the
-                    target class, this attack method is non-applicable.
-                </li>
-                <li>For <b>inputaware</b> attack, since two generators are used in this attack, sometimes the training
-                    of
-                    these two generators
-                    may break due to the training instability. In that case, we may change the random seed and replicate
-                    the attack.</li>
                 <li>
-                    For <b>Fine Pruning, NC, DBD, ANP</b> defenses, the results of these methods are running and will be
-                    comming
-                    soon.
+                    <b>NA</b> means non-applicable.
                 </li>
 
+                <li>
+                    <b>TBD</b> means to be declared, the results of these methods are running and will be comming soon.
+                </li>
+                <li>For <b>SIG</b> and <b>LC</b> attack, since they are clean-label attack, if poisoning rate is higher
+                    than the percentage of the target class, these attack methods is non-applicable.
+                </li>
+                <li>For <b>ANP</b> defense, since the VGG19 model we used does not have batch normalization layer, ANP is non-applicable for VGG19.
+                </li>
             </ul>
         </div>
     </div>
