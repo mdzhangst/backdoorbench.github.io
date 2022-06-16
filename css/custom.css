@@ -205,7 +205,7 @@ html {
   .performanceTableWide th {
     text-align: center;
     max-width: 400px;
-    min-width: 80px;
+    min-width: 83px;
     max-height: 100px;
     padding: 10px;
     vertical-align: middle;
