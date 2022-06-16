@@ -178,7 +178,7 @@ html {
   }
   .performanceTableWide {
     margin: 10px 0px;
-    font-size: 80%;
+    font-size: 95%;
   }
   .performanceTableWide .institution {
     font-style: italic;
@@ -204,7 +204,8 @@ html {
   .performanceTableWide td,
   .performanceTableWide th {
     text-align: center;
-    max-width: 200px;
+    max-width: 400px;
+    min-width: 80px;
     max-height: 100px;
     padding: 10px;
     vertical-align: middle;
