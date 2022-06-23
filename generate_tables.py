@@ -8,38 +8,36 @@ import numbers
 import numpy as np
 
 def get_value(df, model,attack,defense):
-    
+    df = df.replace('TBD',np.nan)
     row_value = df[(df['Attack'] == model) & (df['Model'] == attack)]
     loc = row_value.index.tolist()
     asr = row_value.loc[loc, '{} asr'.format(defense)]
     ca = row_value.loc[loc, '{} ca'.format(defense)]
     rc =row_value.loc[loc, '{} rc'.format(defense)]
 
-    if ca.item()=='TBD':
-        ca='TBD'
-    elif np.isnan(ca.item()):
+
+    if pd.isna(ca.item()):
         ca='NA'
-    elif isinstance(ca.item(), numbers.Number):
-            ca=round(ca.item()*100,2)
+    else:
+        ca=round(float(ca.item())*100,2)
+    
 
-    if asr.item()=='TBD':
-        asr='TBD'
-    elif np.isnan(asr.item()):
-        asr='NA'
-    elif isinstance(asr.item(), numbers.Number):
-            asr=round(asr.item()*100,2)
+    if pd.isna(asr.item()):         
+        asr='NA'     
+    else:         
+        asr=round(float(asr.item())*100,2)
 
-    if rc.item()=='TBD':
-        rc='TBD'
-    elif np.isnan(rc.item()):
-        rc='NA'
-    elif isinstance(rc.item(), numbers.Number):
-            rc=round(rc.item()*100,2)
-
+    if pd.isna(rc.item()):         
+        rc='NA'     
+    else:         
+        rc=round(float(rc.item())*100,2)
+    
     return ca,asr,rc
 
+   
+
 path='tables/backdoor_results.xlsx'
-datasets=['tiny']
+datasets=['GTSRB','CIFAR100','tiny']
 pratios=['10%','5%','1%','0.5%','0.1%']
 
 all_backbones = ['preactresnet18', 'vgg19', "efficientnet_b3", "mobilenet_v3_large", "densenet161"]
