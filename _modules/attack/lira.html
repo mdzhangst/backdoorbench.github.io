@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>attack.lira &mdash; BackdoorBench v2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/mytheme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/js/version_alert.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pyg_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../start/installation.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../start/quickstart.html">Quick Start by Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/bddataset.html">Build Your Own Backdoor Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/attack.html">Build Your Own Backdoor Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/defense.html">Build Your Own Backdoor Defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PACKAGE REFERENCE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/attack.html">packages of attack and defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Visualization</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/analysis_readme.html">Analysis Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/Demo_FV.html">Demo_FV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BackdoorBench</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">attack.lira</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for attack.lira</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This is the code for LIRA attack</span>
+
+<span class="sd">github link : https://github.com/sunbelbd/invisible_backdoor_attacks</span>
+
+<span class="sd">citation:</span>
+<span class="sd">@inproceedings{Doan2021lira,</span>
+<span class="sd">  title     = {LIRA: Learnable, Imperceptible and Robust Backdoor Attacks},</span>
+<span class="sd">  author    = {Khoa D. Doan and Yingjie Lao and Weijie Zhao and Ping Li},</span>
+<span class="sd">  booktitle = {Proceedings of the IEEE International Conference on Computer Vision},</span>
+<span class="sd">  year      = {2021}</span>
+<span class="sd">}</span>
+
+<span class="sd">Please note that</span>
+<span class="sd">1. The original code was implemented in Paddlepaddle,</span>
+<span class="sd">    and we replaced all the functionality of Paddlepaddle with the equivalent API of Pytorch.</span>
+<span class="sd">2. Since this is a training-controllable attack,</span>
+<span class="sd">    the concepts of poisoning rate and poisoned data may not apply.</span>
+<span class="sd">    So, this attack remains incompatible with the whole framework for the time being</span>
+<span class="sd">    (because we require data to be saved during the saving process).</span>
+<span class="sd">    In the future, we will update this version to make it fully integrated into the framework.</span>
+<span class="sd">3. For fairness issue, we apply the same total training epochs as all other attack methods. But for LIRA, it may not be the best choice.</span>
+
+<span class="sd">The original LICENSE of the script is put at the bottom of this file.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="c1"># os.chdir(sys.path[0])</span>
+<span class="c1"># sys.path.append(&#39;../&#39;)</span>
+<span class="c1"># os.getcwd()</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">optim</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data.dataloader</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.dataset_and_transform_generate</span> <span class="kn">import</span> <span class="n">get_dataset_denormalization</span><span class="p">,</span> <span class="n">dataset_and_transform_generate</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">Metric_Aggregator</span><span class="p">,</span> <span class="n">all_acc</span><span class="p">,</span> <span class="n">test_given_dataloader_on_mix</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">plot_loss</span><span class="p">,</span> <span class="n">plot_acc_like_metric</span><span class="p">,</span> <span class="n">given_dataloader_test</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.model_trainer_generate</span> <span class="kn">import</span> <span class="n">generate_cls_model</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.train_settings_generate</span> <span class="kn">import</span> <span class="n">argparser_opt_scheduler</span><span class="p">,</span> <span class="n">argparser_criterion</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.bd_dataset_v2</span> <span class="kn">import</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">,</span> <span class="n">dataset_wrapper_with_transform</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.save_load_attack</span> <span class="kn">import</span> <span class="n">save_attack_result</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.attack.badnet</span> <span class="kn">import</span> <span class="n">BadNet</span>
+
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Autoencoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Autoencoder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">def</span> <span class="nf">double_conv</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">),</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">),</span>
+        <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_channel</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down1</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down2</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down3</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down4</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxpool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span>
+                                    <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up3</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">256</span> <span class="o">+</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up2</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">128</span> <span class="o">+</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up1</span> <span class="o">=</span> <span class="n">double_conv</span><span class="p">(</span><span class="mi">128</span> <span class="o">+</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv_last</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">out_channel</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channel</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">conv1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxpool</span><span class="p">(</span><span class="n">conv1</span><span class="p">)</span>
+
+        <span class="n">conv2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxpool</span><span class="p">(</span><span class="n">conv2</span><span class="p">)</span>
+
+        <span class="n">conv3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxpool</span><span class="p">(</span><span class="n">conv3</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_down4</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">conv3</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">conv2</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">conv1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dconv_up1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_last</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_layer</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span> <span class="nf">all2one_target_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">attack_target</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">attack_target</span>
+
+
+<span class="k">def</span> <span class="nf">all2all_target_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_classes</span>
+
+
+<span class="k">def</span> <span class="nf">create_models</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_model</span> <span class="o">==</span> <span class="s1">&#39;autoencoder&#39;</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;use autoencoder as atk model&quot;</span><span class="p">)</span>
+        <span class="n">atkmodel</span> <span class="o">=</span> <span class="n">Autoencoder</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">)</span>
+        <span class="c1"># Copy of attack model</span>
+        <span class="n">tgtmodel</span> <span class="o">=</span> <span class="n">Autoencoder</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;use unet as atk model&quot;</span><span class="p">)</span>
+        <span class="n">atkmodel</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">)</span>
+        <span class="c1"># Copy of attack model</span>
+        <span class="n">tgtmodel</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">)</span>
+
+    <span class="c1"># Classifier</span>
+    <span class="n">create_net</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">generate_cls_model</span><span class="p">,</span>
+                         <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                         <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+                         <span class="n">image_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">,</span>
+                         <span class="p">)</span>
+    <span class="n">clsmodel</span> <span class="o">=</span> <span class="n">create_net</span><span class="p">()</span>
+
+    <span class="n">tgtmodel</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">clsmodel</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># Optimizer</span>
+    <span class="n">tgtoptimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">tgtmodel</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">lr_atk</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">tgtmodel</span><span class="p">,</span> <span class="n">tgtoptimizer</span><span class="p">,</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">create_net</span>
+
+
+<span class="k">def</span> <span class="nf">hp_test</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">scratchmodel</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+            <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">trainepoch</span><span class="p">,</span> <span class="n">clip_image</span><span class="p">,</span>
+            <span class="n">testoptimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_prefix</span><span class="o">=</span><span class="s1">&#39;Internal&#39;</span><span class="p">,</span> <span class="n">epochs_per_test</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="c1"># default phase 2 parameters to phase 1</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">alpha</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">eps</span>
+
+    <span class="n">test_loss</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">correct_transform</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">test_transform_loss</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">testoptimizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scratchmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">testoptimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">scratchmodel</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">cepoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trainepoch</span><span class="p">):</span>
+        <span class="n">scratchmodel</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+            <span class="n">scratchmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">atkmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">autocast</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">):</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">noise</span> <span class="o">=</span> <span class="n">atkmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span>
+                    <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+
+                <span class="n">atkoutput</span> <span class="o">=</span> <span class="n">scratchmodel</span><span class="p">(</span><span class="n">atkdata</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">scratchmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="n">loss_clean</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+                <span class="n">loss_poison</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">atkoutput</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">loss_clean</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">loss_poison</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">testoptimizer</span><span class="p">)</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">testoptimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">cepoch</span> <span class="o">%</span> <span class="n">epochs_per_test</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">cepoch</span> <span class="o">==</span> <span class="n">trainepoch</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">scratchmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+                    <span class="n">scratchmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+                    <span class="n">atkmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+                    <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">scratchmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+                    <span class="n">test_loss</span> <span class="o">+=</span> <span class="n">cross_entropy</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># sum up batch loss</span>
+                    <span class="n">correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+                    <span class="n">noise</span> <span class="o">=</span> <span class="n">atkmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span>
+                    <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+                    <span class="n">atkoutput</span> <span class="o">=</span> <span class="n">scratchmodel</span><span class="p">(</span><span class="n">atkdata</span><span class="p">)</span>
+                    <span class="n">test_transform_loss</span> <span class="o">+=</span> <span class="n">cross_entropy</span><span class="p">(</span>
+                        <span class="n">atkoutput</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># sum up batch loss</span>
+                    <span class="n">correct_transform</span> <span class="o">+=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">atkoutput</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+            <span class="n">test_loss</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="n">test_transform_loss</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+            <span class="n">correct</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="n">correct_transform</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">-Test set [</span><span class="si">{}</span><span class="s1">]: Loss: clean </span><span class="si">{:.4f}</span><span class="s1"> poison </span><span class="si">{:.4f}</span><span class="s1">, Accuracy: clean </span><span class="si">{:.2f}</span><span class="s1"> poison </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">log_prefix</span><span class="p">,</span> <span class="n">cepoch</span><span class="p">,</span>
+                    <span class="n">test_loss</span><span class="p">,</span> <span class="n">test_transform_loss</span><span class="p">,</span>
+                    <span class="n">correct</span><span class="p">,</span> <span class="n">correct_transform</span>
+                <span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">correct</span><span class="p">,</span> <span class="n">correct_transform</span>
+
+
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">tgtmodel</span><span class="p">,</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">tgtoptimizer</span><span class="p">,</span> <span class="n">clsoptimizer</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+          <span class="n">train_loader</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">train_epoch</span><span class="p">,</span> <span class="n">create_net</span><span class="p">,</span> <span class="n">clip_image</span><span class="p">,</span> <span class="n">post_transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">clsmodel</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">tgtmodel</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">losslist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+
+        <span class="n">tgtmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">clsmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">atkmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">autocast</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">post_transforms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">post_transforms</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1">########################################</span>
+            <span class="c1">#### Update Transformation Function ####</span>
+            <span class="c1">########################################</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">tgtmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">eps</span>
+            <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+
+            <span class="c1"># Calculate loss</span>
+            <span class="n">atkoutput</span> <span class="o">=</span> <span class="n">clsmodel</span><span class="p">(</span><span class="n">atkdata</span><span class="p">)</span>
+            <span class="n">loss_poison</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">atkoutput</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+            <span class="n">loss1</span> <span class="o">=</span> <span class="n">loss_poison</span>
+
+        <span class="n">losslist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss1</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+        <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss1</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">tgtoptimizer</span><span class="p">)</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="n">tgtoptimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+        <span class="c1">###############################</span>
+        <span class="c1">#### Update the classifier ####</span>
+        <span class="c1">###############################</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">autocast</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">):</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">atkmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">eps</span>
+            <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">clsmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">atkoutput</span> <span class="o">=</span> <span class="n">clsmodel</span><span class="p">(</span><span class="n">atkdata</span><span class="p">)</span>
+            <span class="n">loss_clean</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="n">loss_poison</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">atkoutput</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+            <span class="n">loss2</span> <span class="o">=</span> <span class="n">loss_clean</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">alpha</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">args</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">loss_poison</span>
+
+        <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss2</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">clsoptimizer</span><span class="p">)</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="n">clsoptimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="n">atkloss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">losslist</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">losslist</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">atkloss</span>
+
+
+<span class="k">def</span> <span class="nf">get_target_transform</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DONE</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s1">&#39;all2one&#39;</span><span class="p">:</span>
+        <span class="n">target_transform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">all2one_target_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s1">&#39;all2all&#39;</span><span class="p">:</span>
+        <span class="n">target_transform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">all2all_target_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid mode </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">target_transform</span>
+
+
+<span class="c1"># done</span>
+<span class="k">def</span> <span class="nf">get_train_test_loaders</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">test_loader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;tiny-imagenet&#39;</span><span class="p">,</span> <span class="s1">&#39;tiny-imagenet32&#39;</span><span class="p">,</span> <span class="s1">&#39;tiny&#39;</span><span class="p">]:</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.1179039478302</span><span class="p">,</span> <span class="mf">2.640000104904175</span>
+
+        <span class="k">def</span> <span class="nf">clip_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;cifar10&#39;</span><span class="p">:</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.9895</span><span class="p">,</span> <span class="mf">2.1309</span>
+
+        <span class="k">def</span> <span class="nf">clip_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;cifar100&#39;</span><span class="p">:</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.8974</span><span class="p">,</span> <span class="mf">2.0243</span>
+
+        <span class="k">def</span> <span class="nf">clip_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;mnist&#39;</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">clip_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;gtsrb&#39;</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">clip_image</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid dataset: </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="n">clip_image</span>
+
+
+<span class="k">class</span> <span class="nc">ToNumpy</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span> <span class="nc">ProbTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>  <span class="c1"># , **kwargs):</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span> <span class="nc">PostTensorTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PostTensorTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_crop</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">RandomCrop</span><span class="p">((</span><span class="n">opt</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span> <span class="n">opt</span><span class="o">.</span><span class="n">input_width</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">random_crop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_rotation</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">random_rotation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar10&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random_horizontal_flip</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="c1"># my done</span>
+<span class="k">def</span> <span class="nf">get_dataloader</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">min_width</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+    <span class="n">train_img_transform</span><span class="p">,</span> \
+    <span class="n">train_label_transform</span><span class="p">,</span> \
+    <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+    <span class="n">test_img_transform</span><span class="p">,</span> \
+    <span class="n">test_label_transform</span> <span class="o">=</span> <span class="n">dataset_and_transform_generate</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dataset_and_transform_generate done&quot;</span><span class="p">)</span>
+
+    <span class="n">clean_train_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+        <span class="n">train_dataset_without_transform</span><span class="p">,</span>
+        <span class="n">test_img_transform</span><span class="p">,</span>  <span class="c1"># since later we have post_transform which contains randomcrop etc</span>
+        <span class="n">train_label_transform</span>
+    <span class="p">)</span>
+
+    <span class="n">clean_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+        <span class="n">test_dataset_without_transform</span><span class="p">,</span>
+        <span class="n">test_img_transform</span><span class="p">,</span>
+        <span class="n">test_label_transform</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
+        <span class="n">dataloader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+            <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dataloader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">opt</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dataloader</span>
+
+
+<span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">create_net</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">generate_cls_model</span><span class="p">,</span>
+                         <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                         <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+                         <span class="n">image_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">,</span>
+                         <span class="p">)</span>
+    <span class="n">netC</span> <span class="o">=</span> <span class="n">create_net</span><span class="p">()</span>
+    <span class="n">netC</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span> <span class="o">=</span> <span class="n">argparser_opt_scheduler</span><span class="p">(</span><span class="n">netC</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;atk stage1, Optimizer: </span><span class="si">{</span><span class="n">optimizerC</span><span class="si">}</span><span class="s1">, scheduler: </span><span class="si">{</span><span class="n">schedulerC</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">netC</span><span class="p">,</span> <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span>
+
+
+<span class="k">def</span> <span class="nf">final_test</span><span class="p">(</span><span class="n">clean_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_dataloader</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">test_model_path</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">netC</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+               <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span>
+               <span class="n">trainepoch</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">optimizerC</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">schedulerC</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_prefix</span><span class="o">=</span><span class="s1">&#39;Internal&#39;</span><span class="p">,</span> <span class="n">epochs_per_test</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_epoch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+               <span class="n">clip_image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">netC</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+    <span class="n">clean_accs</span><span class="p">,</span> <span class="n">poison_accs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">optimizerC</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;No optimizer, creating default SGD...&#39;</span><span class="p">)</span>
+        <span class="n">optimizerC</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">netC</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">finetune_lr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">schedulerC</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;No scheduler, creating default 100,200,300,400...&#39;</span><span class="p">)</span>
+        <span class="n">schedulerC</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">MultiStepLR</span><span class="p">(</span><span class="n">optimizerC</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">args</span><span class="o">.</span><span class="n">finetune_lr</span><span class="p">)</span>
+
+    <span class="n">clean_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bd_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">train_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">agg</span> <span class="o">=</span> <span class="n">Metric_Aggregator</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">cepoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_epoch</span><span class="p">,</span> <span class="n">trainepoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">netC</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="n">batch_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+
+            <span class="n">data</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">netC</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">atkmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">autocast</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">data_transforms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data_transforms</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="n">output</span> <span class="o">=</span> <span class="n">netC</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">loss_clean</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                        <span class="n">noise</span> <span class="o">=</span> <span class="n">atkmodel</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span>
+                        <span class="k">if</span> <span class="n">clip_image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">atkdata</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+                    <span class="n">atkoutput</span> <span class="o">=</span> <span class="n">netC</span><span class="p">(</span><span class="n">atkdata</span><span class="p">)</span>
+                    <span class="n">loss_poison</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">atkoutput</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">loss_poison</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">loss_clean</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">loss_poison</span>
+
+            <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">optimizerC</span><span class="p">)</span>
+            <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">optimizerC</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="n">batch_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">one_epoch_loss</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">batch_loss_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_loss_list</span><span class="p">)</span>
+        <span class="n">schedulerC</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="c1"># test</span>
+
+        <span class="n">clean_metrics</span><span class="p">,</span> \
+        <span class="n">clean_test_epoch_predict_list</span><span class="p">,</span> \
+        <span class="n">clean_test_epoch_label_list</span><span class="p">,</span> \
+            <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">netC</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">clean_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s2">&quot;test_loss_avg_over_batch&quot;</span><span class="p">]</span>
+        <span class="n">test_acc</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s2">&quot;test_acc&quot;</span><span class="p">]</span>
+
+        <span class="n">bd_metrics</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_label_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_original_index_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_poison_indicator_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_original_targets_list</span> <span class="o">=</span> <span class="n">test_given_dataloader_on_mix</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">netC</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">bd_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">bd_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s2">&quot;test_loss_avg_over_batch&quot;</span><span class="p">]</span>
+        <span class="n">test_asr</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span><span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_test_epoch_label_list</span><span class="p">)</span>
+        <span class="n">test_ra</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span><span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_test_epoch_original_targets_list</span><span class="p">)</span>
+
+        <span class="n">agg</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">cepoch</span><span class="p">,</span>
+                <span class="s2">&quot;train_epoch_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">one_epoch_loss</span><span class="p">,</span>
+                <span class="s2">&quot;clean_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;bd_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;test_acc&quot;</span><span class="p">:</span> <span class="n">test_acc</span><span class="p">,</span>
+                <span class="s2">&quot;test_asr&quot;</span><span class="p">:</span> <span class="n">test_asr</span><span class="p">,</span>
+                <span class="s2">&quot;test_ra&quot;</span><span class="p">:</span> <span class="n">test_ra</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clean_test_loss_avg_over_batch</span><span class="p">)</span>
+        <span class="n">bd_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bd_test_loss_avg_over_batch</span><span class="p">)</span>
+        <span class="n">test_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span>
+        <span class="n">test_asr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_asr</span><span class="p">)</span>
+        <span class="n">test_ra_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ra</span><span class="p">)</span>
+
+        <span class="n">plot_loss</span><span class="p">(</span>
+            <span class="n">train_loss_list</span><span class="p">,</span>
+            <span class="n">clean_test_loss_list</span><span class="p">,</span>
+            <span class="n">bd_test_loss_list</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="s2">&quot;loss_metric_plots_atk_stg2&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_acc_like_metric</span><span class="p">(</span>
+            <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span>
+            <span class="n">test_acc_list</span><span class="p">,</span>
+            <span class="n">test_asr_list</span><span class="p">,</span>
+            <span class="n">test_ra_list</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="s2">&quot;loss_metric_plots_atk_stg2&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">agg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df_atk_stg2.csv&quot;</span><span class="p">)</span>
+
+    <span class="n">agg</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df_summary_atk_stg2.csv&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clean_accs</span><span class="p">,</span> <span class="n">poison_accs</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">criterion</span><span class="p">):</span>
+    <span class="n">clean_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                       <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="n">clean_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bd_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">test_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">train_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">agg</span> <span class="o">=</span> <span class="n">Metric_Aggregator</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;========== ARGS ==========&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="n">clip_image</span> <span class="o">=</span> <span class="n">get_train_test_loaders</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">post_transforms</span> <span class="o">=</span> <span class="n">PostTensorTransform</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;========== DATA ==========&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loaders: Train </span><span class="si">{}</span><span class="s1"> examples/</span><span class="si">{}</span><span class="s1"> iters, Test </span><span class="si">{}</span><span class="s1"> examples/</span><span class="si">{}</span><span class="s1"> iters&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)))</span>
+
+    <span class="n">atkmodel</span><span class="p">,</span> <span class="n">tgtmodel</span><span class="p">,</span> <span class="n">tgtoptimizer</span><span class="p">,</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">create_net</span> <span class="o">=</span> <span class="n">create_models</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;========== MODELS ==========&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">atkmodel</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">clsmodel</span><span class="p">)</span>
+
+    <span class="n">target_transform</span> <span class="o">=</span> <span class="n">get_target_transform</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">trainlosses</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_epoch</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Initialize the tgtmodel</span>
+    <span class="n">tgtmodel</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">atkmodel</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;============================&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;============================&#39;</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;BEGIN TRAINING &gt;&gt;&gt;&gt;&gt;&gt;&#39;</span><span class="p">)</span>
+    <span class="n">clsmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">clsoptimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">clsmodel</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;data parallel in main&quot;</span><span class="p">)</span>
+        <span class="n">atkmodel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+            <span class="n">atkmodel</span><span class="p">,</span>
+            <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+        <span class="p">)</span>
+        <span class="n">tgtmodel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+            <span class="n">tgtmodel</span><span class="p">,</span>
+            <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+        <span class="p">)</span>
+        <span class="n">clsmodel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+            <span class="n">clsmodel</span><span class="p">,</span>
+            <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_epoch</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">both_train_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">train_epoch</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;===== EPOCH: </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">both_train_epochs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> CLS </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">train_epoch</span><span class="si">}</span><span class="s1"> =====&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">avoid_clsmodel_reinitialization</span><span class="p">:</span>
+                <span class="n">clsmodel</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+                <span class="n">clsoptimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">clsmodel</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">lr</span><span class="p">)</span>
+            <span class="n">trainloss</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">tgtmodel</span><span class="p">,</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">tgtoptimizer</span><span class="p">,</span> <span class="n">clsoptimizer</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+                              <span class="n">train_loader</span><span class="p">,</span>
+                              <span class="n">epoch</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">create_net</span><span class="p">,</span> <span class="n">clip_image</span><span class="p">,</span>
+                              <span class="n">post_transforms</span><span class="o">=</span><span class="n">post_transforms</span><span class="p">)</span>
+            <span class="n">trainlosses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trainloss</span><span class="p">)</span>
+        <span class="n">atkmodel</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">tgtmodel</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">avoid_clsmodel_reinitialization</span><span class="p">:</span>
+            <span class="n">scratchmodel</span> <span class="o">=</span> <span class="n">create_net</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+                <span class="n">scratchmodel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+                    <span class="n">scratchmodel</span><span class="p">,</span>
+                    <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+                <span class="p">)</span>
+            <span class="n">scratchmodel</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">clsmodel</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>  <span class="c1"># transfer from cls to scratch for testing</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">clsmodel</span> <span class="o">=</span> <span class="n">create_net</span><span class="p">()</span>
+        <span class="c1"># test</span>
+
+        <span class="n">clsmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">clsmodel</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+        <span class="n">atkmodel</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">atkmodel</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+
+        <span class="n">bd_test_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+            <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/bd_test_dataset_stage_one&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">trans_t</span> <span class="ow">in</span> <span class="n">deepcopy</span><span class="p">(</span>
+                <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="o">.</span><span class="n">transforms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_t</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">):</span>
+                <span class="n">denormalizer</span> <span class="o">=</span> <span class="n">get_dataset_denormalization</span><span class="p">(</span><span class="n">trans_t</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">denormalizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="o">.</span><span class="n">getitem_all</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">original_index</span><span class="p">,</span> <span class="n">poison_indicator</span><span class="p">,</span> <span class="n">original_targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                <span class="n">clean_test_dataloader</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+
+                <span class="n">noise</span> <span class="o">=</span> <span class="n">atkmodel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span>
+                <span class="n">atkdata</span> <span class="o">=</span> <span class="n">clip_image</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>
+                <span class="n">atktarget</span> <span class="o">=</span> <span class="n">target_transform</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+                <span class="n">position_changed</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels</span> <span class="o">-</span> <span class="n">atktarget</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">atkdata</span> <span class="o">=</span> <span class="n">atkdata</span><span class="p">[</span><span class="n">position_changed</span><span class="p">]</span>
+                <span class="n">targets1</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()[</span><span class="n">position_changed</span><span class="p">]</span>
+                <span class="n">y_poison_batch</span> <span class="o">=</span> <span class="n">atktarget</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()[</span><span class="n">position_changed</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atkdata</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">y_poison_batch</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">targets1</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;find bug&quot;</span><span class="p">)</span>
+                    <span class="n">bd_test_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span>
+                            <span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position_changed</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span>
+                                <span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="n">denormalizer</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y_poison_batch</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets1</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+
+        <span class="n">bd_test_dataset</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">bd_test_dataset</span><span class="o">.</span><span class="n">poison_indicator</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">bd_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="n">bd_test_dataset</span><span class="p">,</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># generate bd test dataloader</span>
+
+        <span class="n">bd_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">bd_test_dataset_with_transform</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="c1">### My test code start</span>
+
+        <span class="n">clean_metrics</span><span class="p">,</span> \
+        <span class="n">clean_test_epoch_predict_list</span><span class="p">,</span> \
+        <span class="n">clean_test_epoch_label_list</span><span class="p">,</span> \
+            <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">clsmodel</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">clean_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s2">&quot;test_loss_avg_over_batch&quot;</span><span class="p">]</span>
+        <span class="n">test_acc</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s2">&quot;test_acc&quot;</span><span class="p">]</span>
+
+        <span class="n">bd_metrics</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_label_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_original_index_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_poison_indicator_list</span><span class="p">,</span> \
+        <span class="n">bd_test_epoch_original_targets_list</span> <span class="o">=</span> <span class="n">test_given_dataloader_on_mix</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">clsmodel</span><span class="p">,</span>
+            <span class="n">test_dataloader</span><span class="o">=</span><span class="n">bd_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">bd_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s2">&quot;test_loss_avg_over_batch&quot;</span><span class="p">]</span>
+        <span class="n">test_asr</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span><span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_test_epoch_label_list</span><span class="p">)</span>
+        <span class="n">test_ra</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span><span class="n">bd_test_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_test_epoch_original_targets_list</span><span class="p">)</span>
+
+        <span class="n">agg</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">,</span>
+                <span class="s2">&quot;train_epoch_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">trainloss</span><span class="p">,</span>
+                <span class="s2">&quot;clean_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;bd_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;test_acc&quot;</span><span class="p">:</span> <span class="n">test_acc</span><span class="p">,</span>
+                <span class="s2">&quot;test_asr&quot;</span><span class="p">:</span> <span class="n">test_asr</span><span class="p">,</span>
+                <span class="s2">&quot;test_ra&quot;</span><span class="p">:</span> <span class="n">test_ra</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clean_test_loss_avg_over_batch</span><span class="p">)</span>
+        <span class="n">bd_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bd_test_loss_avg_over_batch</span><span class="p">)</span>
+        <span class="n">test_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span>
+        <span class="n">test_asr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_asr</span><span class="p">)</span>
+        <span class="n">test_ra_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ra</span><span class="p">)</span>
+
+        <span class="n">plot_loss</span><span class="p">(</span>
+            <span class="n">train_loss_list</span><span class="p">,</span>
+            <span class="n">clean_test_loss_list</span><span class="p">,</span>
+            <span class="n">bd_test_loss_list</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="s2">&quot;loss_metric_plots_atk_stg1&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_acc_like_metric</span><span class="p">(</span>
+            <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span>
+            <span class="n">test_acc_list</span><span class="p">,</span>
+            <span class="n">test_asr_list</span><span class="p">,</span>
+            <span class="n">test_ra_list</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="s2">&quot;loss_metric_plots_atk_stg1&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">agg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df_atk_stg1.csv&quot;</span><span class="p">)</span>
+
+    <span class="n">agg</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df_summary_atk_stg1.csv&quot;</span><span class="p">)</span>
+
+    <span class="c1">### My test code end</span>
+
+    <span class="k">return</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">bd_test_dataloader</span>
+
+
+<span class="k">def</span> <span class="nf">main2</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">pre_clsmodel</span><span class="p">,</span> <span class="n">pre_atkmodel</span><span class="p">,</span> <span class="n">clean_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_dataloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">):</span>
+    <span class="n">args_for_finetune</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">args_for_finetune</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">9</span><span class="p">:]:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args_for_finetune</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;finetune_&quot;</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Defaulting test_alpha to train alpha of </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">alpha</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">alpha</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">finetune_lr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Defaulting test_lr to train lr </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">lr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">finetune_lr</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">lr</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Defaulting test_eps to train eps </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">test_eps</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">test_eps</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">eps</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;====&gt; ARGS&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="n">clip_image</span> <span class="o">=</span> <span class="n">get_train_test_loaders</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">atkmodel</span><span class="p">,</span> <span class="n">tgtmodel</span><span class="p">,</span> <span class="n">tgtoptimizer</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">create_net</span> <span class="o">=</span> <span class="n">create_models</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">netC</span><span class="p">,</span> <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;data parallel in main2&quot;</span><span class="p">)</span>
+        <span class="n">netC</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+        <span class="p">)</span>
+        <span class="n">atkmodel</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+            <span class="n">atkmodel</span><span class="p">,</span>
+            <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+        <span class="p">)</span>
+
+    <span class="n">netC</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">pre_clsmodel</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+
+    <span class="n">target_transform</span> <span class="o">=</span> <span class="n">get_target_transform</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">atkmodel</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">pre_atkmodel</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+
+    <span class="n">netC</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span> <span class="o">=</span> <span class="n">argparser_opt_scheduler</span><span class="p">(</span><span class="n">netC</span><span class="p">,</span> <span class="n">args_for_finetune</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">netC</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;atk stage2, optimizerC: </span><span class="si">{</span><span class="n">optimizerC</span><span class="si">}</span><span class="s2">, schedulerC: </span><span class="si">{</span><span class="n">schedulerC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">data_transforms</span> <span class="o">=</span> <span class="n">PostTensorTransform</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;====&gt; Post tensor transform&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">data_transforms</span><span class="p">)</span>
+
+    <span class="n">clean_accs</span><span class="p">,</span> <span class="n">poison_accs</span> <span class="o">=</span> <span class="n">final_test</span><span class="p">(</span><span class="n">clean_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_dataloader</span><span class="p">,</span>
+                                         <span class="n">args</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">netC</span><span class="p">,</span> <span class="n">target_transform</span><span class="p">,</span>
+                                         <span class="n">train_loader</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span>
+                                         <span class="n">trainepoch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">epochs</span> <span class="o">-</span> <span class="n">args</span><span class="o">.</span><span class="n">both_train_epochs</span><span class="p">),</span>
+                                         <span class="n">writer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_prefix</span><span class="o">=</span><span class="s1">&#39;POISON&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">test_alpha</span><span class="p">,</span> <span class="n">epochs_per_test</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                         <span class="n">optimizerC</span><span class="o">=</span><span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span><span class="o">=</span><span class="n">schedulerC</span><span class="p">,</span> <span class="n">data_transforms</span><span class="o">=</span><span class="n">data_transforms</span><span class="p">,</span>
+                                         <span class="n">clip_image</span><span class="o">=</span><span class="n">clip_image</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LIRA"><a class="viewcode-back" href="../../generated/attack.LIRA.html#attack.LIRA">[docs]</a><span class="k">class</span> <span class="nc">LIRA</span><span class="p">(</span><span class="n">BadNet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LIRA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">set_bd_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--attack&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--attack_target&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;target class in all2one attack&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--attack_label_trans&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;which type of label modification in backdoor attack&#39;</span>
+                            <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--bd_yaml_path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="s1">&#39;../config/attack/lira/default.yaml&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path for yaml file provide additional default attributes&#39;</span><span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--random_crop&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--random_rotation&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--attack_model&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=&#39;autoencoder&#39;)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lr_atk&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=0.0001, help=&#39;learning rate for attack model&#39;)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--eps&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=0.3, help=&#39;epsilon for data poisoning&#39;)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test_eps&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># default=None,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--alpha&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=0.5)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test_alpha&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># default=None,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--fix_generator_epoch&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=1, help=&#39;training epochs for victim model&#39;)</span>
+
+        <span class="c1"># parser.add_argument(&#39;--finetune_epochs&#39;, type=int)  # default=500,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--finetune_lr&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># default=None,</span>
+
+        <span class="c1"># parser.add_argument(&#39;--steplr_gamma&#39;, )  # default=&#39;30,60,90,150&#39;)</span>
+        <span class="c1"># parser.add_argument(&#39;--steplr_milestones&#39;, type=float)  # default=0.05,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--finetune_steplr_gamma&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--finetune_steplr_milestones&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--finetune_optimizer&#39;</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=&#39;sgd&#39;)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--both_train_epochs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="c1">################### its original</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--train_epoch&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;training epochs for victim model&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--epochs_per_external_eval&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--best_threshold&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;verbosity&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--avoid_clsmodel_reinitialization&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;whether test the poisoned model from scratch&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test_n_size&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test_use_train_best&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--test_use_train_last&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parser</span>
+
+<div class="viewcode-block" id="LIRA.stage1_non_training_data_prepare"><a class="viewcode-back" href="../../generated/attack.LIRA.html#attack.LIRA.stage1_non_training_data_prepare">[docs]</a>    <span class="k">def</span> <span class="nf">stage1_non_training_data_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">stage2_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stage2 start&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">train_img_transform</span><span class="p">,</span> \
+        <span class="n">train_label_transform</span><span class="p">,</span> \
+        <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">test_img_transform</span><span class="p">,</span> \
+        <span class="n">test_label_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_targets</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_targets</span> \
+            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">benign_prepare</span><span class="p">()</span>
+
+        <span class="n">clean_test_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">test_dataset_without_transform</span>
+        <span class="p">)</span>
+        <span class="n">clean_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span><span class="n">clean_test_dataset</span><span class="p">,</span> <span class="n">test_img_transform</span><span class="p">)</span>
+        <span class="n">clean_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                           <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                           <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">generate_cls_model</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="n">image_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span>
+                <span class="c1"># since DataParallel only allow .to(&quot;cuda&quot;)</span>
+            <span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span>
+                <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+            <span class="p">)</span>
+
+
+        <span class="n">criterion</span> <span class="o">=</span> <span class="n">argparser_criterion</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">global</span> <span class="n">device</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span>
+                <span class="c1"># since DataParallel only allow .to(&quot;cuda&quot;)</span>
+            <span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="p">)</span>
+        <span class="k">global</span> <span class="n">scaler</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">GradScaler</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">)</span>
+        <span class="n">clsmodel</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">bd_test_dataloader</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+        <span class="n">main2</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">clsmodel</span><span class="p">,</span> <span class="n">atkmodel</span><span class="p">,</span> <span class="n">clean_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_dataloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">)</span>
+        <span class="c1">###</span>
+
+        <span class="n">save_attack_result</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">clsmodel</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="n">data_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">,</span>
+            <span class="n">img_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">,</span>
+            <span class="n">clean_data</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+            <span class="n">bd_train</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">bd_test</span><span class="o">=</span><span class="n">bd_test_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_bd_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Be careful that we need to give the bd yaml higher priority. So, we put the add bd yaml first.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_bd_yaml_to_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_yaml_to_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">epochs</span> <span class="o">-</span> <span class="n">args</span><span class="o">.</span><span class="n">both_train_epochs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(total) epochs should be larger than both_train_epochs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage1_non_training_data_prepare</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage2_training</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">attack</span> <span class="o">=</span> <span class="n">LIRA</span><span class="p">()</span>
+    <span class="n">attack</span><span class="o">.</span><span class="n">attack</span><span class="p">()</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">MIT License</span>
+
+<span class="sd">Copyright (c) 2021 Cognitive Computing Lab</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SCLBD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

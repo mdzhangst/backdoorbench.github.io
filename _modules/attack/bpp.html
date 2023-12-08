@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>attack.bpp &mdash; BackdoorBench v2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/mytheme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/js/version_alert.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pyg_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../start/installation.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../start/quickstart.html">Quick Start by Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/bddataset.html">Build Your Own Backdoor Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/attack.html">Build Your Own Backdoor Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/defense.html">Build Your Own Backdoor Defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PACKAGE REFERENCE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/attack.html">packages of attack and defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Visualization</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/analysis_readme.html">Analysis Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/Demo_FV.html">Demo_FV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BackdoorBench</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">attack.bpp</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for attack.bpp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">this script is for bpp attack</span>
+<span class="sd">github link : https://github.com/RU-System-Software-and-Security/BppAttack</span>
+<span class="sd">The original LICENSE of the script is put at the bottom of this file.</span>
+<span class="sd">citation:</span>
+<span class="sd">@InProceedings{Wang_2022_CVPR,</span>
+<span class="sd">    author    = {Wang, Zhenting and Zhai, Juan and Ma, Shiqing},</span>
+<span class="sd">    title     = {BppAttack: Stealthy and Efficient Trojan Attacks Against Deep Neural Networks via Image Quantization and Contrastive Adversarial Learning},</span>
+<span class="sd">    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},</span>
+<span class="sd">    month     = {June},</span>
+<span class="sd">    year      = {2022},</span>
+<span class="sd">    pages     = {15074-15084}</span>
+<span class="sd">}</span>
+
+<span class="sd">license from the original code:</span>
+
+<span class="sd">MIT License</span>
+
+<span class="sd">Copyright (c) 2022 RUSSS</span>
+
+<span class="sd">Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="sd">of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="sd">in the Software without restriction, including without limitation the rights</span>
+<span class="sd">to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="sd">copies of the Software, and to permit persons to whom the Software is</span>
+<span class="sd">furnished to do so, subject to the following conditions:</span>
+
+<span class="sd">The above copyright notice and this permission notice shall be included in all</span>
+<span class="sd">copies or substantial portions of the Software.</span>
+
+<span class="sd">THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="sd">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="sd">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="sd">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="sd">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="sd">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="sd">SOFTWARE.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># os.chdir(sys.path[0])</span>
+<span class="c1"># sys.path.append(&#39;../&#39;)</span>
+<span class="c1"># os.getcwd()</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">ToPILImage</span>
+<span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="n">ToTensor</span>
+
+<span class="n">to_pil</span> <span class="o">=</span> <span class="n">ToPILImage</span><span class="p">()</span>
+<span class="n">to_tensor</span> <span class="o">=</span> <span class="n">ToTensor</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">numba.types</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int64</span>
+
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.dataset_and_transform_generate</span> <span class="kn">import</span> <span class="n">get_dataset_normalization</span><span class="p">,</span> <span class="n">get_dataset_denormalization</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.model_trainer_generate</span> <span class="kn">import</span> <span class="n">generate_cls_model</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">Metric_Aggregator</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.save_load_attack</span> <span class="kn">import</span> <span class="n">save_attack_result</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.train_settings_generate</span> <span class="kn">import</span> <span class="n">argparser_opt_scheduler</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.attack.badnet</span> <span class="kn">import</span> <span class="n">add_common_attack_args</span><span class="p">,</span> <span class="n">BadNet</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.bd_dataset_v2</span> <span class="kn">import</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">,</span> <span class="n">dataset_wrapper_with_transform</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">all_acc</span><span class="p">,</span> <span class="n">given_dataloader_test</span><span class="p">,</span> <span class="n">general_plot_for_epoch</span>
+
+
+<span class="k">def</span> <span class="nf">generalize_to_lower_pratio</span><span class="p">(</span><span class="n">pratio</span><span class="p">,</span> <span class="n">bs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pratio</span> <span class="o">*</span> <span class="n">bs</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># the normal case that each batch can have at least one poison sample</span>
+        <span class="k">return</span> <span class="n">pratio</span> <span class="o">*</span> <span class="n">bs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># then randomly return number of poison sample</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span>
+                             <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">pratio</span> <span class="o">*</span> <span class="n">bs</span><span class="p">:</span>  <span class="c1"># eg. pratio = 1/1280, then 1/10 of batch(bs=128) should contains one sample</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar10&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4914</span><span class="p">,</span> <span class="mf">0.4822</span><span class="p">,</span> <span class="mf">0.4465</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.247</span><span class="p">,</span> <span class="mf">0.243</span><span class="p">,</span> <span class="mf">0.261</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar100&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5071</span><span class="p">,</span> <span class="mf">0.4867</span><span class="p">,</span> <span class="mf">0.4408</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2675</span><span class="p">,</span> <span class="mf">0.2565</span><span class="p">,</span> <span class="mf">0.2761</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;mnist&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;gtsrb&quot;</span><span class="p">,</span> <span class="s2">&quot;celeba&quot;</span><span class="p">]:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;imagenet&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;tiny&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4802</span><span class="p">,</span> <span class="mf">0.4481</span><span class="p">,</span> <span class="mf">0.3975</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2302</span><span class="p">,</span> <span class="mf">0.2265</span><span class="p">,</span> <span class="mf">0.2262</span><span class="p">]</span>
+    <span class="n">inputs_clone</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;mnist&quot;</span><span class="p">:</span>
+        <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">variance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">expected_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">variance</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">+</span> <span class="n">expected_values</span><span class="p">[</span>
+                <span class="n">channel</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">inputs_clone</span> <span class="o">*</span> <span class="mi">255</span>
+
+
+<span class="k">def</span> <span class="nf">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar10&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4914</span><span class="p">,</span> <span class="mf">0.4822</span><span class="p">,</span> <span class="mf">0.4465</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.247</span><span class="p">,</span> <span class="mf">0.243</span><span class="p">,</span> <span class="mf">0.261</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar100&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5071</span><span class="p">,</span> <span class="mf">0.4867</span><span class="p">,</span> <span class="mf">0.4408</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2675</span><span class="p">,</span> <span class="mf">0.2565</span><span class="p">,</span> <span class="mf">0.2761</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;mnist&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;gtsrb&quot;</span><span class="p">,</span> <span class="s2">&quot;celeba&quot;</span><span class="p">]:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;imagenet&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;tiny&quot;</span><span class="p">:</span>
+        <span class="n">expected_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4802</span><span class="p">,</span> <span class="mf">0.4481</span><span class="p">,</span> <span class="mf">0.3975</span><span class="p">]</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2302</span><span class="p">,</span> <span class="mf">0.2265</span><span class="p">,</span> <span class="mf">0.2262</span><span class="p">]</span>
+    <span class="n">inputs_clone</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;mnist&quot;</span><span class="p">:</span>
+        <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs_clone</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">expected_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">variance</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">inputs_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">inputs_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">expected_values</span><span class="p">[</span><span class="n">channel</span><span class="p">])</span><span class="o">.</span><span class="n">div</span><span class="p">(</span>
+                <span class="n">variance</span><span class="p">[</span><span class="n">channel</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">inputs_clone</span>
+
+
+<span class="nd">@jit</span><span class="p">(</span><span class="n">float64</span><span class="p">[:](</span><span class="n">float64</span><span class="p">[:],</span> <span class="n">int64</span><span class="p">,</span> <span class="n">float64</span><span class="p">[:]),</span> <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rnd1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">floydDitherspeed</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">squeeze_num</span><span class="p">):</span>
+    <span class="n">channel</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">old</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">rnd1</span><span class="p">(</span><span class="n">old</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">old</span> <span class="o">-</span> <span class="n">new</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">:</span>
+                <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">error</span> <span class="o">*</span> <span class="mf">0.4375</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">):</span>
+                <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">error</span> <span class="o">*</span> <span class="mf">0.0625</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">:</span>
+                <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">+=</span> <span class="n">error</span> <span class="o">*</span> <span class="mf">0.3125</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">):</span>
+                <span class="n">image</span><span class="p">[:,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">error</span> <span class="o">*</span> <span class="mf">0.1875</span>
+    <span class="k">return</span> <span class="n">image</span>
+
+
+<span class="k">class</span> <span class="nc">ProbTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ProbTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span> <span class="nc">PostTensorTransform</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PostTensorTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_crop</span> <span class="o">=</span> <span class="n">ProbTransform</span><span class="p">(</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">RandomCrop</span><span class="p">((</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">random_crop</span><span class="p">),</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.8</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_rotation</span> <span class="o">=</span> <span class="n">ProbTransform</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">random_rotation</span><span class="p">),</span>
+                                             <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 50% random rotation</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar10&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random_horizontal_flip</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">module</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">class</span> <span class="nc">Denormalize</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">expected_values</span><span class="p">,</span> <span class="n">variance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span> <span class="o">=</span> <span class="n">expected_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">=</span> <span class="n">variance</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x_clone</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">):</span>
+            <span class="n">x_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x_clone</span>
+
+
+<span class="k">class</span> <span class="nc">Denormalize</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">expected_values</span><span class="p">,</span> <span class="n">variance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span> <span class="o">=</span> <span class="n">expected_values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variance</span> <span class="o">=</span> <span class="n">variance</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x_clone</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">):</span>
+            <span class="n">x_clone</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">channel</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_values</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">x_clone</span>
+
+
+<span class="k">class</span> <span class="nc">Denormalizer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">denormalizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_denormalizer</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_denormalizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">denormalizer</span> <span class="o">=</span> <span class="n">Denormalize</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">get_dataset_normalization</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+                                   <span class="n">get_dataset_normalization</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">denormalizer</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">denormalizer</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">denormalizer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+
+<div class="viewcode-block" id="Bpp"><a class="viewcode-back" href="../../generated/attack.Bpp.html#attack.Bpp">[docs]</a><span class="k">class</span> <span class="nc">Bpp</span><span class="p">(</span><span class="n">BadNet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Bpp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">set_bd_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">add_common_attack_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--bd_yaml_path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="s1">&#39;../config/attack/bpp/default.yaml&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path for yaml file provide additional default attributes&#39;</span><span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--neg_ratio&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=0.2)  </span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--random_rotation&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=10)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--random_crop&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=5)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--squeeze_num&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=8</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dithering&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="p">)</span>  <span class="c1"># default=False</span>
+
+        <span class="k">return</span> <span class="n">parser</span>
+
+<div class="viewcode-block" id="Bpp.stage1_non_training_data_prepare"><a class="viewcode-back" href="../../generated/attack.Bpp.html#attack.Bpp.stage1_non_training_data_prepare">[docs]</a>    <span class="k">def</span> <span class="nf">stage1_non_training_data_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;stage1 start&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="s2">&quot;args&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">train_img_transform</span><span class="p">,</span> \
+        <span class="n">train_label_transform</span><span class="p">,</span> \
+        <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">test_img_transform</span><span class="p">,</span> \
+        <span class="n">test_label_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_targets</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_targets</span> \
+            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">benign_prepare</span><span class="p">()</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Be careful, here must replace the regular train tranform with test transform.&quot;</span><span class="p">)</span>
+        <span class="c1"># you can find in the original code that get_transform function has pretensor_transform=False always.</span>
+        <span class="n">clean_train_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span> <span class="o">=</span> <span class="n">test_img_transform</span>
+
+        <span class="n">clean_train_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                            <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">clean_train_dataloader_shuffled</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                                     <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                                                     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">clean_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                           <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                           <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage1_results</span> <span class="o">=</span> <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+                              <span class="n">clean_train_dataloader</span><span class="p">,</span> \
+                              <span class="n">clean_train_dataloader_shuffled</span><span class="p">,</span> \
+                              <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+                              <span class="n">clean_test_dataloader</span></div>
+
+    <span class="k">def</span> <span class="nf">stage2_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stage2 start&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+        <span class="n">agg</span> <span class="o">=</span> <span class="n">Metric_Aggregator</span><span class="p">()</span>
+
+        <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataloader</span><span class="p">,</span> \
+        <span class="n">clean_train_dataloader_shuffled</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_test_dataloader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage1_results</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span>
+
+            <span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">netC</span> <span class="o">=</span> <span class="n">generate_cls_model</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="n">image_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="n">netC</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+                <span class="n">netC</span><span class="p">,</span>
+                <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+            <span class="p">)</span>
+
+        <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span> <span class="o">=</span> <span class="n">argparser_opt_scheduler</span><span class="p">(</span><span class="n">netC</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Train from scratch!!!&quot;</span><span class="p">)</span>
+        <span class="n">best_clean_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">best_bd_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">best_cross_acc</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">epoch_current</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># filter out transformation that not reversible</span>
+        <span class="n">transforms_reversible</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">filter</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">)),</span>
+                    <span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="o">.</span><span class="n">transforms</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># get denormalizer</span>
+        <span class="k">for</span> <span class="n">trans_t</span> <span class="ow">in</span> <span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="o">.</span><span class="n">transforms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trans_t</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">):</span>
+                <span class="n">denormalizer</span> <span class="o">=</span> <span class="n">get_dataset_denormalization</span><span class="p">(</span><span class="n">trans_t</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">denormalizer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+
+        <span class="c1"># ---------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_train_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/clean_train_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/bd_train_dataset_Save&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cross_train_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/cross_train_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset_save</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span>
+            <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/bd_train_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clean_train_dataloader</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+
+                <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">),</span> <span class="n">targets</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                                                                                                     <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+                <span class="c1"># bs = inputs.shape[0]</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">batch_size</span>
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">denormalizer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">denormalizer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+                <span class="c1"># save clean</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clean_train_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="n">bs</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+
+
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                            <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">inputs_bd</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                <span class="n">y_poison_batch</span> <span class="o">=</span> <span class="n">targets_bd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="n">bs</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y_poison_batch</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+
+
+
+        <span class="n">reversible_test_dataset</span> <span class="o">=</span> <span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="p">)</span>
+
+        <span class="n">reversible_test_dataset</span><span class="o">.</span><span class="n">wrap_img_transform</span> <span class="o">=</span> <span class="n">transforms_reversible</span>
+
+        <span class="n">reversible_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">reversible_test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                                                 <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                                                 <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_test_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/clean_test_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/bd_test_all_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/bd_test_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cross_test_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> <span class="n">save_folder_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/cross_test_dataset&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reversible_test_dataloader</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">targets</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">denormalizer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">denormalizer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+                <span class="c1"># save clean</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clean_test_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Evaluate Backdoor</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                            <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">inputs_bd</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                    <span class="n">position_changed</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span> <span class="o">!=</span> <span class="n">targets</span><span class="p">)</span>  <span class="c1"># since if label does not change, then cannot tell if the poison is effective or not.</span>
+                    <span class="n">targets_bd_r</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span><span class="p">)[</span><span class="n">position_changed</span><span class="p">]</span>
+                    <span class="n">inputs_bd_r</span> <span class="o">=</span> <span class="n">inputs_bd</span><span class="p">[</span><span class="n">position_changed</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+                    <span class="n">targets_bd_r</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+                    <span class="n">inputs_bd_r</span> <span class="o">=</span> <span class="n">inputs_bd</span>
+                    <span class="n">position_changed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+
+                <span class="n">targets</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                <span class="n">y_poison_batch</span> <span class="o">=</span> <span class="n">targets_bd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y_poison_batch</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="n">y_poison_batch_r</span> <span class="o">=</span> <span class="n">targets_bd_r</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs_bd_r</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position_changed</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span>
+                            <span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y_poison_batch_r</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position_changed</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx_in_batch</span><span class="p">]]),</span>
+                    <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">reversible_test_dataloader</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">t_nom</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">([</span><span class="mf">0.4914</span><span class="p">,</span> <span class="mf">0.4822</span><span class="p">,</span> <span class="mf">0.4465</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.247</span><span class="p">,</span> <span class="mf">0.243</span><span class="p">,</span> <span class="mf">0.261</span><span class="p">])</span>
+                <span class="c1"># Evaluate cross</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">neg_ratio</span><span class="p">:</span>
+                    <span class="n">index_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clean_test_dataset_with_transform</span><span class="p">)))</span>
+                    <span class="n">residual_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+
+                    <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+                    <span class="n">inputs_negative1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+                    <span class="n">inputs_d</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">denormalizer</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bs</span><span class="p">):</span>
+                        <span class="n">inputs_negative</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs_d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                                    <span class="n">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clean_test_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+                                                         <span class="n">to_tensor</span><span class="p">(</span>
+                                                             <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                    <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">inputs_negative</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs_negative</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cross_test_dataset</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                            <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                            <span class="c1"># manually calculate the original index, since we do not shuffle the dataloader</span>
+                            <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                            <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                            <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="p">)</span>
+
+
+
+        <span class="n">bd_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_dataset</span><span class="p">,</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">bd_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">bd_test_dataset_with_transform</span><span class="p">,</span>
+                                        <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                        <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                        <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                                        <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">bd_test_r_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="p">,</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="o">.</span><span class="n">poison_indicator</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">bd_test_r_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">bd_test_r_dataset_with_transform</span><span class="p">,</span>
+                                          <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                          <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                          <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                                          <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">neg_ratio</span><span class="p">:</span>
+            <span class="n">cross_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cross_test_dataset</span><span class="p">,</span>
+                <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">cross_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">cross_test_dataset_with_transform</span><span class="p">,</span>
+                                               <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                               <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                               <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                                               <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cross_test_dataloader</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">test_dataloaders</span> <span class="o">=</span> <span class="p">(</span><span class="n">clean_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_dataloader</span><span class="p">,</span> <span class="n">cross_test_dataloader</span><span class="p">,</span> <span class="n">bd_test_r_dataloader</span><span class="p">)</span>
+
+        <span class="n">train_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_mix_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_clean_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">train_cross_acc_only_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">clean_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">bd_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cross_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ra_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">test_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">test_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">test_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">test_cross_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epoch_current</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">epochs</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Epoch </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="n">train_epoch_loss_avg_over_batch</span><span class="p">,</span> \
+            <span class="n">train_mix_acc</span><span class="p">,</span> \
+            <span class="n">train_clean_acc</span><span class="p">,</span> \
+            <span class="n">train_asr</span><span class="p">,</span> \
+            <span class="n">train_ra</span><span class="p">,</span> \
+            <span class="n">train_cross_acc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span>
+                <span class="n">netC</span><span class="p">,</span>
+                <span class="n">optimizerC</span><span class="p">,</span>
+                <span class="n">schedulerC</span><span class="p">,</span>
+                <span class="n">clean_train_dataloader_shuffled</span><span class="p">,</span>
+                <span class="n">args</span><span class="p">)</span>
+
+            <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span> \
+            <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span> \
+            <span class="n">cross_test_loss_avg_over_batch</span><span class="p">,</span> \
+            <span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span> \
+            <span class="n">test_acc</span><span class="p">,</span> \
+            <span class="n">test_asr</span><span class="p">,</span> \
+            <span class="n">test_ra</span><span class="p">,</span> \
+            <span class="n">test_cross_acc</span> \
+                <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_step</span><span class="p">(</span>
+                <span class="n">netC</span><span class="p">,</span>
+                <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span>
+                <span class="n">clean_test_dataloader</span><span class="p">,</span>
+                <span class="n">bd_test_r_dataloader</span><span class="p">,</span>
+                <span class="n">cross_test_dataloader</span><span class="p">,</span>
+                <span class="n">args</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">agg</span><span class="p">({</span>
+                <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">,</span>
+
+                <span class="s2">&quot;train_epoch_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">train_epoch_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;train_acc&quot;</span><span class="p">:</span> <span class="n">train_mix_acc</span><span class="p">,</span>
+                <span class="s2">&quot;train_acc_clean_only&quot;</span><span class="p">:</span> <span class="n">train_clean_acc</span><span class="p">,</span>
+                <span class="s2">&quot;train_asr_bd_only&quot;</span><span class="p">:</span> <span class="n">train_asr</span><span class="p">,</span>
+                <span class="s2">&quot;train_ra_bd_only&quot;</span><span class="p">:</span> <span class="n">train_ra</span><span class="p">,</span>
+                <span class="s2">&quot;train_cross_acc_only&quot;</span><span class="p">:</span> <span class="n">train_cross_acc</span><span class="p">,</span>
+
+                <span class="s2">&quot;clean_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;bd_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;cross_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">cross_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;ra_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span>
+                <span class="s2">&quot;test_acc&quot;</span><span class="p">:</span> <span class="n">test_acc</span><span class="p">,</span>
+                <span class="s2">&quot;test_asr&quot;</span><span class="p">:</span> <span class="n">test_asr</span><span class="p">,</span>
+                <span class="s2">&quot;test_ra&quot;</span><span class="p">:</span> <span class="n">test_ra</span><span class="p">,</span>
+                <span class="s2">&quot;test_cross_acc&quot;</span><span class="p">:</span> <span class="n">test_cross_acc</span><span class="p">,</span>
+            <span class="p">})</span>
+
+            <span class="n">train_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_epoch_loss_avg_over_batch</span><span class="p">)</span>
+            <span class="n">train_mix_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_mix_acc</span><span class="p">)</span>
+            <span class="n">train_clean_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_clean_acc</span><span class="p">)</span>
+            <span class="n">train_asr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_asr</span><span class="p">)</span>
+            <span class="n">train_ra_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_ra</span><span class="p">)</span>
+            <span class="n">train_cross_acc_only_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_cross_acc</span><span class="p">)</span>
+
+            <span class="n">clean_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clean_test_loss_avg_over_batch</span><span class="p">)</span>
+            <span class="n">bd_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bd_test_loss_avg_over_batch</span><span class="p">)</span>
+            <span class="n">cross_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cross_test_loss_avg_over_batch</span><span class="p">)</span>
+            <span class="n">ra_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ra_test_loss_avg_over_batch</span><span class="p">)</span>
+            <span class="n">test_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span>
+            <span class="n">test_asr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_asr</span><span class="p">)</span>
+            <span class="n">test_ra_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ra</span><span class="p">)</span>
+            <span class="n">test_cross_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_cross_acc</span><span class="p">)</span>
+
+            <span class="n">general_plot_for_epoch</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Train Acc&quot;</span><span class="p">:</span> <span class="n">train_mix_acc_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Train Acc (clean sample only)&quot;</span><span class="p">:</span> <span class="n">train_clean_acc_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Train ASR&quot;</span><span class="p">:</span> <span class="n">train_asr_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Train RA&quot;</span><span class="p">:</span> <span class="n">train_ra_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Train Cross Acc&quot;</span><span class="p">:</span> <span class="n">train_cross_acc_only_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test C-Acc&quot;</span><span class="p">:</span> <span class="n">test_acc_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test ASR&quot;</span><span class="p">:</span> <span class="n">test_asr_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test RA&quot;</span><span class="p">:</span> <span class="n">test_ra_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test Cross Acc&quot;</span><span class="p">:</span> <span class="n">test_cross_acc_list</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/acc_like_metric_plots.png&quot;</span><span class="p">,</span>
+                <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">general_plot_for_epoch</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Train Loss&quot;</span><span class="p">:</span> <span class="n">train_loss_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test Clean Loss&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test Backdoor Loss&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test Cross Loss&quot;</span><span class="p">:</span> <span class="n">cross_test_loss_list</span><span class="p">,</span>
+                    <span class="s2">&quot;Test RA Loss&quot;</span><span class="p">:</span> <span class="n">ra_test_loss_list</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">save_path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/loss_metric_plots.png&quot;</span><span class="p">,</span>
+                <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">agg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df.csv&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">frequency_save</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">epoch</span> <span class="o">%</span> <span class="n">args</span><span class="o">.</span><span class="n">frequency_save</span> <span class="o">==</span> <span class="n">args</span><span class="o">.</span><span class="n">frequency_save</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;netC&quot;</span><span class="p">:</span> <span class="n">netC</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">&quot;schedulerC&quot;</span><span class="p">:</span> <span class="n">schedulerC</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">&quot;optimizerC&quot;</span><span class="p">:</span> <span class="n">optimizerC</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                    <span class="s2">&quot;epoch_current&quot;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">save_path</span> <span class="o">+</span> <span class="s2">&quot;/state_dict.pt&quot;</span><span class="p">)</span>
+
+        <span class="n">agg</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/attack_df_summary.csv&quot;</span><span class="p">)</span>
+
+
+        <span class="n">netC</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clean_train_dataloader</span><span class="p">):</span>
+                <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">),</span> <span class="n">targets</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                                                                                                    <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># Create backdoor data</span>
+                <span class="n">num_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">generalize_to_lower_pratio</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">pratio</span><span class="p">,</span> <span class="n">bs</span><span class="p">))</span>
+                <span class="n">num_neg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bs</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">neg_ratio</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">num_bd</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_neg</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">],</span> <span class="n">args</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                            <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                                <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                                <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                        <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">])</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                        <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+
+                    <span class="n">train_dataset_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;celeba&quot;</span><span class="p">:</span>
+                        <span class="n">index_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">train_dataset_num</span><span class="p">))</span>
+                        <span class="n">residual_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">index_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">train_dataset_num</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+                        <span class="n">residual_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+                        <span class="n">residual_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">%</span> <span class="n">train_dataset_num</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_list</span><span class="p">),</span> <span class="n">bs</span><span class="p">)]</span>
+
+                    <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">num_neg</span><span class="p">)])</span>
+                    <span class="n">inputs_d</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_neg</span><span class="p">):</span>
+                        <span class="n">inputs_negative</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs_d</span><span class="p">[</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                                    <span class="n">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clean_train_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                    <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">inputs_negative</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+                    <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_negative</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                    <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">inputs_negative</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[(</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">num_neg</span><span class="p">):]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">total_targets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">targets_bd</span><span class="p">,</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_neg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">],</span> <span class="n">args</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                            <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                                <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                                <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                        <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">])</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                        <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+
+                    <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">total_targets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">targets_bd</span><span class="p">,</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+                    <span class="n">total_targets</span> <span class="o">=</span> <span class="n">targets</span>
+
+                <span class="n">input_changed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">inputs_negative</span><span class="p">,</span> <span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                <span class="n">input_changed</span> <span class="o">=</span> <span class="n">denormalizer</span><span class="p">(</span>  <span class="c1"># since we normalized once, we need to denormalize it back.</span>
+                    <span class="n">input_changed</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                <span class="n">target_changed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">targets_bd</span><span class="p">,</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">num_neg</span><span class="p">)],</span> <span class="p">],</span>
+                                           <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+                <span class="c1"># save container</span>
+                <span class="k">for</span> <span class="n">idx_in_batch</span><span class="p">,</span> <span class="n">t_img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                        <span class="n">input_changed</span>
+                <span class="p">):</span>
+                    <span class="c1"># here we know it starts from 0 and they are consecutive</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset_save</span><span class="o">.</span><span class="n">set_one_bd_sample</span><span class="p">(</span>
+                        <span class="n">selected_index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">batch_idx</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">idx_in_batch</span><span class="p">),</span>
+                        <span class="n">img</span><span class="o">=</span><span class="p">(</span><span class="n">t_img</span><span class="p">),</span>
+                        <span class="n">bd_label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_changed</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="n">idx_in_batch</span><span class="p">]),</span>
+                    <span class="p">)</span>
+
+
+        <span class="n">save_attack_result</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">netC</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+            <span class="n">data_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dataset_path</span><span class="p">,</span>
+            <span class="n">img_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">,</span>
+            <span class="n">clean_data</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+            <span class="n">bd_train</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset_save</span><span class="p">,</span>
+            <span class="n">bd_test</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bd_test_dataset</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">netC</span><span class="p">,</span> <span class="n">optimizerC</span><span class="p">,</span> <span class="n">schedulerC</span><span class="p">,</span> <span class="n">clean_train_dataloader</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Train:&quot;</span><span class="p">)</span>
+        <span class="n">netC</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="n">rate_bd</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">pratio</span>
+        <span class="n">squeeze_num</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span>
+
+        <span class="n">criterion_CE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+
+        <span class="n">transforms</span> <span class="o">=</span> <span class="n">PostTensorTransform</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">batch_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">batch_predict_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">batch_label_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">batch_poison_indicator_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">batch_original_targets_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clean_train_dataloader</span><span class="p">):</span>
+            <span class="n">optimizerC</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">),</span> <span class="n">targets</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                                                                                                 <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">)</span>
+            <span class="n">bs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Create backdoor data</span>
+            <span class="n">num_bd</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">generalize_to_lower_pratio</span><span class="p">(</span><span class="n">rate_bd</span><span class="p">,</span> <span class="n">bs</span><span class="p">))</span>
+            <span class="n">num_neg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bs</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">neg_ratio</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">num_bd</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_neg</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">],</span> <span class="n">args</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                            <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">])</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+
+                <span class="n">train_dataset_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_train_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;celeba&quot;</span><span class="p">:</span>
+                    <span class="n">index_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">train_dataset_num</span><span class="p">))</span>
+                    <span class="n">residual_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">index_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">train_dataset_num</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+                    <span class="n">residual_index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">index_list</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+                    <span class="n">residual_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">%</span> <span class="n">train_dataset_num</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">index_list</span><span class="p">),</span> <span class="n">bs</span><span class="p">)]</span>
+
+                <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">num_neg</span><span class="p">)])</span>
+                <span class="n">inputs_d</span> <span class="o">=</span> <span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_neg</span><span class="p">):</span>
+                    <span class="n">inputs_negative</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs_d</span><span class="p">[</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                                <span class="n">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bd_train_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clean_train_dataset</span><span class="p">[</span><span class="n">residual_index</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">inputs_negative</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+                <span class="n">inputs_negative</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_negative</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">inputs_negative</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[(</span><span class="n">num_bd</span> <span class="o">+</span> <span class="n">num_neg</span><span class="p">):]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">total_targets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">targets_bd</span><span class="p">,</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">num_neg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">back_to_np_4d</span><span class="p">(</span><span class="n">inputs</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">],</span> <span class="n">args</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dithering</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">inputs_bd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                            <span class="n">floydDitherspeed</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">squeeze_num</span><span class="p">)))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                            <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">inputs_bd</span> <span class="o">/</span> <span class="mf">255.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">squeeze_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">255</span>
+
+                <span class="n">inputs_bd</span> <span class="o">=</span> <span class="n">np_4d_to_tensor</span><span class="p">(</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2one&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">])</span> <span class="o">*</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_target</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_label_trans</span> <span class="o">==</span> <span class="s2">&quot;all2all&quot;</span><span class="p">:</span>
+                    <span class="n">targets_bd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">targets</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+
+                <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">inputs_bd</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">total_targets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">targets_bd</span><span class="p">,</span> <span class="n">targets</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:]],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="p">(</span><span class="n">num_bd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">inputs</span>
+                <span class="n">total_targets</span> <span class="o">=</span> <span class="n">targets</span>
+
+            <span class="n">total_inputs</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">(</span><span class="n">total_inputs</span><span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">total_preds</span> <span class="o">=</span> <span class="n">netC</span><span class="p">(</span><span class="n">total_inputs</span><span class="p">)</span>
+            <span class="n">total_time</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+            <span class="n">loss_ce</span> <span class="o">=</span> <span class="n">criterion_CE</span><span class="p">(</span><span class="n">total_preds</span><span class="p">,</span> <span class="n">total_targets</span><span class="p">)</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_ce</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+            <span class="n">optimizerC</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="n">batch_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+            <span class="n">batch_predict_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">total_preds</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+            <span class="n">batch_label_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_targets</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+
+            <span class="n">poison_indicator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+            <span class="n">poison_indicator</span><span class="p">[:</span><span class="n">num_bd</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># all others are cross/clean samples cannot conut up to train acc</span>
+            <span class="n">poison_indicator</span><span class="p">[</span><span class="n">num_bd</span><span class="p">:</span><span class="n">num_neg</span> <span class="o">+</span> <span class="n">num_bd</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># indicate for the cross terms</span>
+
+            <span class="n">batch_poison_indicator_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">poison_indicator</span><span class="p">)</span>
+            <span class="n">batch_original_targets_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targets</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+
+        <span class="n">schedulerC</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">train_epoch_loss_avg_over_batch</span><span class="p">,</span> \
+        <span class="n">train_epoch_predict_list</span><span class="p">,</span> \
+        <span class="n">train_epoch_label_list</span><span class="p">,</span> \
+        <span class="n">train_epoch_poison_indicator_list</span><span class="p">,</span> \
+        <span class="n">train_epoch_original_targets_list</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">batch_loss_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_loss_list</span><span class="p">),</span> \
+                                            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch_predict_list</span><span class="p">),</span> \
+                                            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch_label_list</span><span class="p">),</span> \
+                                            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch_poison_indicator_list</span><span class="p">),</span> \
+                                            <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">batch_original_targets_list</span><span class="p">)</span>
+
+        <span class="n">train_mix_acc</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span><span class="n">train_epoch_predict_list</span><span class="p">,</span> <span class="n">train_epoch_label_list</span><span class="p">)</span>
+
+        <span class="n">train_bd_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">train_epoch_poison_indicator_list</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">train_cross_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">train_epoch_poison_indicator_list</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">train_clean_idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">train_epoch_poison_indicator_list</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">train_clean_acc</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span>
+            <span class="n">train_epoch_predict_list</span><span class="p">[</span><span class="n">train_clean_idx</span><span class="p">],</span>
+            <span class="n">train_epoch_label_list</span><span class="p">[</span><span class="n">train_clean_idx</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_bd</span><span class="p">:</span>
+            <span class="n">train_asr</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span>
+                <span class="n">train_epoch_predict_list</span><span class="p">[</span><span class="n">train_bd_idx</span><span class="p">],</span>
+                <span class="n">train_epoch_label_list</span><span class="p">[</span><span class="n">train_bd_idx</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_asr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">num_neg</span><span class="p">:</span>
+            <span class="n">train_cross_acc</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span>
+                <span class="n">train_epoch_predict_list</span><span class="p">[</span><span class="n">train_cross_idx</span><span class="p">],</span>
+                <span class="n">train_epoch_label_list</span><span class="p">[</span><span class="n">train_cross_idx</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_cross_acc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">num_bd</span><span class="p">:</span>
+            <span class="n">train_ra</span> <span class="o">=</span> <span class="n">all_acc</span><span class="p">(</span>
+                <span class="n">train_epoch_predict_list</span><span class="p">[</span><span class="n">train_bd_idx</span><span class="p">],</span>
+                <span class="n">train_epoch_original_targets_list</span><span class="p">[</span><span class="n">train_bd_idx</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_ra</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="n">train_epoch_loss_avg_over_batch</span><span class="p">,</span> \
+               <span class="n">train_mix_acc</span><span class="p">,</span> \
+               <span class="n">train_clean_acc</span><span class="p">,</span> \
+               <span class="n">train_asr</span><span class="p">,</span> \
+               <span class="n">train_ra</span><span class="p">,</span> \
+               <span class="n">train_cross_acc</span>
+
+    <span class="k">def</span> <span class="nf">eval_step</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span>
+            <span class="n">clean_test_dataloader</span><span class="p">,</span>
+            <span class="n">bd_test_r_dataloader</span><span class="p">,</span>
+            <span class="n">cross_test_dataloader</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+
+    <span class="p">):</span>
+
+
+        <span class="c1"># -----------------------</span>
+
+        <span class="n">clean_metrics</span><span class="p">,</span> <span class="n">clean_epoch_predict_list</span><span class="p">,</span> <span class="n">clean_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">clean_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+        <span class="n">test_acc</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+        <span class="n">bd_metrics</span><span class="p">,</span> <span class="n">bd_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">bd_test_r_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">bd_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+        <span class="n">test_asr</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="o">.</span><span class="n">getitem_all_switch</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># change to return the original label instead</span>
+        <span class="n">ra_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="p">,</span>
+            <span class="n">clean_test_dataset_with_transform</span><span class="o">.</span><span class="n">wrap_img_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ra_test_dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">ra_test_dataset_with_transform</span><span class="p">,</span>
+                                        <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+                                        <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+                                        <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                                        <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ra_metrics</span><span class="p">,</span> <span class="n">ra_epoch_predict_list</span><span class="p">,</span> <span class="n">ra_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">ra_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ra_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">ra_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+        <span class="n">test_ra</span> <span class="o">=</span> <span class="n">ra_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bd_test_r_dataset</span><span class="o">.</span><span class="n">getitem_all_switch</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># switch back</span>
+
+        <span class="n">cross_metrics</span><span class="p">,</span> <span class="n">cross_epoch_predict_list</span><span class="p">,</span> <span class="n">cross_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+            <span class="n">netC</span><span class="p">,</span>
+            <span class="n">cross_test_dataloader</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cross_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">cross_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+        <span class="n">test_cross_acc</span> <span class="o">=</span> <span class="n">cross_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span> \
+               <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span> \
+               <span class="n">cross_test_loss_avg_over_batch</span><span class="p">,</span> \
+               <span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span> \
+               <span class="n">test_acc</span><span class="p">,</span> \
+               <span class="n">test_asr</span><span class="p">,</span> \
+               <span class="n">test_ra</span><span class="p">,</span> \
+               <span class="n">test_cross_acc</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">attack</span> <span class="o">=</span> <span class="n">Bpp</span><span class="p">()</span>
+    <span class="n">attack</span><span class="o">.</span><span class="n">attack</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SCLBD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

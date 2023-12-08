@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>attack.prototype &mdash; BackdoorBench v2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/mytheme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/js/version_alert.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pyg_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../start/installation.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../start/quickstart.html">Quick Start by Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/bddataset.html">Build Your Own Backdoor Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/attack.html">Build Your Own Backdoor Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/defense.html">Build Your Own Backdoor Defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PACKAGE REFERENCE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/attack.html">packages of attack and defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Visualization</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/analysis_readme.html">Analysis Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/Demo_FV.html">Demo_FV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BackdoorBench</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">attack.prototype</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for attack.prototype</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">this script is for basic normal training</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="c1"># os.chdir(sys.path[0])</span>
+<span class="c1"># sys.path.append(&#39;../&#39;)</span>
+<span class="c1"># os.getcwd()</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.save_path_generate</span> <span class="kn">import</span> <span class="n">generate_save_folder</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.dataset_and_transform_generate</span> <span class="kn">import</span> <span class="n">get_num_classes</span><span class="p">,</span> <span class="n">get_input_shape</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.fix_random</span> <span class="kn">import</span> <span class="n">fix_random</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.dataset_and_transform_generate</span> <span class="kn">import</span> <span class="n">dataset_and_transform_generate</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.bd_dataset_v2</span> <span class="kn">import</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">,</span> <span class="n">get_labels</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.model_trainer_generate</span> <span class="kn">import</span> <span class="n">generate_cls_model</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.train_settings_generate</span> <span class="kn">import</span> <span class="n">argparser_opt_scheduler</span><span class="p">,</span> <span class="n">argparser_criterion</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.log_assist</span> <span class="kn">import</span> <span class="n">get_git_info</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">ModelTrainerCLS_v2</span>
+
+
+<div class="viewcode-block" id="NormalCase"><a class="viewcode-back" href="../../generated/attack.NormalCase.html#attack.NormalCase">[docs]</a><span class="k">class</span> <span class="nc">NormalCase</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--num_workers&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;dataloader num_workers&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-pm&quot;</span><span class="p">,</span> <span class="s2">&quot;--pin_memory&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">],</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;dataloader pin_memory&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-nb&quot;</span><span class="p">,</span> <span class="s2">&quot;--non_blocking&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">],</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;.to(), set the non_blocking = ?&quot;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-pf&quot;</span><span class="p">,</span> <span class="s1">&#39;--prefetch&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">],</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use prefetch&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--amp&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">])</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--device&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lr_scheduler&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;which lr_scheduler use for optimizer&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--epochs&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dataset&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;which dataset to use&#39;</span>
+                            <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dataset_path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--batch_size&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--lr&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--steplr_stepsize&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--steplr_gamma&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--sgd_momentum&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--wd&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;weight decay of sgd&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--steplr_milestones&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--client_optimizer&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--random_seed&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;random_seed&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--frequency_save&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39; frequency_save, 0 is never&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--model&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;choose which kind of model&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--attack_save_path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;(Optional) default to ./record/time+random_str&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--git_hash&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;git hash number, in order to find which version of code is used&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--yaml_path&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="s2">&quot;../config/attack/prototype/cifar10.yaml&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parser</span>
+
+    <span class="k">def</span> <span class="nf">add_yaml_to_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">yaml_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">clean_defaults</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">clean_defaults</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">=</span> <span class="n">clean_defaults</span>
+
+    <span class="k">def</span> <span class="nf">process_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">terminal_info</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="n">get_num_classes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_channel</span> <span class="o">=</span> <span class="n">get_input_shape</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">img_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">dataset_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">dataset_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">args</span>
+
+    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="c1"># r&quot;&quot;&quot; several processes will be carried out:</span>
+        
+        <span class="c1"># 1. save path;</span>
+        <span class="c1"># 2. set the logger;</span>
+        <span class="c1"># 3. file Handler;</span>
+        <span class="c1"># 4. consoleHandler</span>
+        <span class="c1"># 5. record the git infomation for debug (if available.)</span>
+        <span class="c1"># 6. set the random seed</span>
+        
+        <span class="c1"># &quot;&quot;&quot;</span>
+        
+        <span class="c1">### save path</span>
+        <span class="k">if</span> <span class="s1">&#39;attack_save_path&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="n">generate_save_folder</span><span class="p">(</span>
+                <span class="n">run_info</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;afterwards&#39;</span> <span class="k">if</span> <span class="s1">&#39;load_path&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">else</span> <span class="s1">&#39;attack&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="p">(</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">attack</span> <span class="k">if</span> <span class="s1">&#39;attack&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">else</span> <span class="s2">&quot;prototype&quot;</span><span class="p">),</span>
+                <span class="n">given_load_file_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">load_path</span> <span class="k">if</span> <span class="s1">&#39;load_path&#39;</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">all_record_folder_path</span><span class="o">=</span><span class="s1">&#39;./record&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">save_path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">attack_save_path</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span>
+                <span class="n">save_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+        <span class="n">args</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="n">save_path</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">save_path</span> <span class="o">+</span> <span class="s1">&#39;/info.pickle&#39;</span><span class="p">)</span>
+
+        <span class="c1">### set the logger</span>
+        <span class="n">logFormatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+            <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> [</span><span class="si">%(levelname)-8s</span><span class="s1">] [</span><span class="si">%(filename)s</span><span class="s1">:</span><span class="si">%(lineno)d</span><span class="s1">] </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">:%H:%M:%S&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># file Handler</span>
+        <span class="n">fileHandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span>
+            <span class="n">save_path</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y_%m_</span><span class="si">%d</span><span class="s2">_%H_%M_%S&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;.log&#39;</span><span class="p">)</span>
+        <span class="n">fileHandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logFormatter</span><span class="p">)</span>
+        <span class="n">fileHandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fileHandler</span><span class="p">)</span>
+        <span class="c1"># consoleHandler</span>
+        <span class="n">consoleHandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+        <span class="n">consoleHandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logFormatter</span><span class="p">)</span>
+        <span class="n">consoleHandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">consoleHandler</span><span class="p">)</span>
+        <span class="c1"># overall logger level should &lt;= min(handler) otherwise no log will be recorded.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># disable other debug, since too many debug</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;PIL&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;matplotlib.font_manager&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">))</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Only INFO or above level log will show in cmd. DEBUG level log only will show in log file.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># record the git infomation for debug (if available.)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">get_git_info</span><span class="p">()))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Getting git info fails.&#39;</span><span class="p">)</span>
+
+        <span class="c1">### set the random seed</span>
+        <span class="n">fix_random</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">random_seed</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+
+    <span class="k">def</span> <span class="nf">benign_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">train_img_transform</span><span class="p">,</span> \
+        <span class="n">train_label_transform</span><span class="p">,</span> \
+        <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">test_img_transform</span><span class="p">,</span> \
+        <span class="n">test_label_transform</span> <span class="o">=</span> <span class="n">dataset_and_transform_generate</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dataset_and_transform_generate done&quot;</span><span class="p">)</span>
+
+        <span class="n">clean_train_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="n">train_dataset_without_transform</span><span class="p">,</span>
+            <span class="n">train_img_transform</span><span class="p">,</span>
+            <span class="n">train_label_transform</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_train_dataset_targets</span> <span class="o">=</span> <span class="n">get_labels</span><span class="p">(</span><span class="n">train_dataset_without_transform</span><span class="p">)</span>
+
+        <span class="n">clean_test_dataset_with_transform</span> <span class="o">=</span> <span class="n">dataset_wrapper_with_transform</span><span class="p">(</span>
+            <span class="n">test_dataset_without_transform</span><span class="p">,</span>
+            <span class="n">test_img_transform</span><span class="p">,</span>
+            <span class="n">test_label_transform</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">clean_test_dataset_targets</span> <span class="o">=</span> <span class="n">get_labels</span><span class="p">(</span><span class="n">test_dataset_without_transform</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+               <span class="n">train_img_transform</span><span class="p">,</span> \
+               <span class="n">train_label_transform</span><span class="p">,</span> \
+               <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+               <span class="n">test_img_transform</span><span class="p">,</span> \
+               <span class="n">test_label_transform</span><span class="p">,</span> \
+               <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+               <span class="n">clean_train_dataset_targets</span><span class="p">,</span> \
+               <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+               <span class="n">clean_test_dataset_targets</span>
+
+<div class="viewcode-block" id="NormalCase.stage1_non_training_data_prepare"><a class="viewcode-back" href="../../generated/attack.NormalCase.html#attack.NormalCase.stage1_non_training_data_prepare">[docs]</a>    <span class="k">def</span> <span class="nf">stage1_non_training_data_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot; prepate train and test dataset with special transform.</span>
+<span class="sd">         </span>
+<span class="sd">        .. note::</span>
+
+<span class="sd">            This method is for internal use only, and should only be overwriteen</span>
+<span class="sd">            to meet the request for specific attack method.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># You should rewrite this for specific attack method</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stage1 start&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">train_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">train_img_transform</span><span class="p">,</span> \
+        <span class="n">train_label_transform</span><span class="p">,</span> \
+        <span class="n">test_dataset_without_transform</span><span class="p">,</span> \
+        <span class="n">test_img_transform</span><span class="p">,</span> \
+        <span class="n">test_label_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_train_dataset_targets</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_targets</span> \
+            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">benign_prepare</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage1_results</span> <span class="o">=</span> <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+                              <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+                              <span class="kc">None</span><span class="p">,</span> \
+                              <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">stage2_training</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># You should rewrite this for specific attack method</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stage2 start&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+        <span class="n">clean_train_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span> \
+        <span class="n">bd_train_dataset</span><span class="p">,</span> \
+        <span class="n">bd_test_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage1_results</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">generate_cls_model</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="n">image_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">img_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;cuda:</span><span class="si">{</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span>
+                <span class="c1"># since DataParallel only allow .to(&quot;cuda&quot;)</span>
+            <span class="p">)</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span>
+                <span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+            <span class="p">)</span>
+
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">ModelTrainerCLS_v2</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">criterion</span> <span class="o">=</span> <span class="n">argparser_criterion</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">optimizer</span><span class="p">,</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="n">argparser_opt_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+        <span class="n">trainer</span><span class="o">.</span><span class="n">set_with_dataset</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">train_dataset</span><span class="o">=</span><span class="n">clean_train_dataset_with_transform</span><span class="p">,</span>
+            <span class="n">test_dataset_dict</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;ACC&quot;</span><span class="p">:</span> <span class="n">clean_test_dataset_with_transform</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span>
+            <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">frequency_save</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">frequency_save</span><span class="p">,</span>
+            <span class="n">save_folder_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="n">save_prefix</span><span class="o">=</span><span class="s1">&#39;attack&#39;</span><span class="p">,</span>
+            <span class="n">amp</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">amp</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+            <span class="n">prefetch_transform_attr_name</span><span class="o">=</span><span class="s2">&quot;wrap_img_transform&quot;</span><span class="p">,</span>  <span class="c1"># since we use the preprocess_bd_dataset</span>
+            <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">,</span>
+            <span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">epoch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">epochs</span><span class="p">):</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">train_one_epoch</span><span class="p">()</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">test_all_inner_dataloader</span><span class="p">()[</span><span class="s2">&quot;ACC&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">agg_save_dataframe</span><span class="p">()</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/clean_model.pth&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_yaml_to_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage1_non_training_data_prepare</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage2_training</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">normal_train_process</span> <span class="o">=</span> <span class="n">NormalCase</span><span class="p">()</span>
+    <span class="n">normal_train_process</span><span class="o">.</span><span class="n">attack</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SCLBD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

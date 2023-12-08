@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build Your Own Backdoor Dataset &mdash; BackdoorBench v2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/mytheme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/js/version_alert.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Build Your Own Backdoor Attack" href="attack.html" />
+    <link rel="prev" title="Quick Start by Examples" href="../start/quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/pyg_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/quickstart.html">Quick Start by Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Build Your Own Backdoor Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-dataset.CelebA">CelebA module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dataset.GTSRB">GTSRB module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dataset.Tiny">Tiny module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dataset">contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Build Your Own Backdoor Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="defense.html">Build Your Own Backdoor Defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PACKAGE REFERENCE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/attack.html">packages of attack and defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Visualization</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/analysis_readme.html">Analysis Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization/Demo_FV.html">Demo_FV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BackdoorBench</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Build Your Own Backdoor Dataset</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/bddataset.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="build-your-own-backdoor-dataset">
+<h1>Build Your Own Backdoor Dataset<a class="headerlink" href="#build-your-own-backdoor-dataset" title="Permalink to this heading"></a></h1>
+<section id="module-dataset.CelebA">
+<span id="celeba-module"></span><h2>CelebA module<a class="headerlink" href="#module-dataset.CelebA" title="Permalink to this heading"></a></h2>
+<p>This file is modified based on the following source:
+link : <a class="reference external" href="https://github.com/VinAIResearch/Warping-based_Backdoor_Attack-release">https://github.com/VinAIResearch/Warping-based_Backdoor_Attack-release</a>
+The original license is placed at the end of this file.</p>
+<dl class="simple">
+<dt>The update include:</dt><dd><ol class="arabic simple">
+<li><p>change the param from opt to data_root</p></li>
+<li><p>add if statement to check if the transform is None</p></li>
+</ol>
+</dd>
+</dl>
+<p># idea: This script is for CelebA implementation</p>
+<dl class="simple">
+<dt>Note that if you get error due to download part, you may need to download CelebA manually,</dt><dd><p>since the official implementation use googledrive which limit daily access amount.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="dataset.CelebA.CelebA_attr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CelebA_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/CelebA.html#CelebA_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.CelebA.CelebA_attr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-dataset.GTSRB">
+<span id="gtsrb-module"></span><h2>GTSRB module<a class="headerlink" href="#module-dataset.GTSRB" title="Permalink to this heading"></a></h2>
+<p>This file is modified based on the following source:
+link : <a class="reference external" href="https://github.com/VinAIResearch/Warping-based_Backdoor_Attack-release">https://github.com/VinAIResearch/Warping-based_Backdoor_Attack-release</a>
+The original license is placed at the end of this file.</p>
+<dl class="simple">
+<dt>The update include:</dt><dd><ol class="arabic simple">
+<li><p>change the param from opt to data_root</p></li>
+<li><p>add if statement to check if the transform is None</p></li>
+<li><p>change the path str</p></li>
+</ol>
+</dd>
+</dl>
+<p># idea: This script is implementation of GTSRB, download script is under ./sh</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dataset.GTSRB.GTSRB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GTSRB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/GTSRB.html#GTSRB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.GTSRB.GTSRB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-dataset.Tiny">
+<span id="tiny-module"></span><h2>Tiny module<a class="headerlink" href="#module-dataset.Tiny" title="Permalink to this heading"></a></h2>
+<p>Simple Tiny ImageNet dataset utility class for pytorch.
+This code is copied from <a class="reference external" href="https://gist.github.com/lromor/bcfc69dcf31b2f3244358aea10b7a11b">https://gist.github.com/lromor/bcfc69dcf31b2f3244358aea10b7a11b</a></p>
+<p># idea: This script is implementation of TinyImageNet, the download is automatically started at the first execution.</p>
+<p>original license:</p>
+<p># Copyright (C) 2022 Leonardo Romor
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dataset.Tiny.normalize_tin_val_folder_structure">
+<span class="sig-name descname"><span class="pre">normalize_tin_val_folder_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'images'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'val_annotations.txt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/Tiny.html#normalize_tin_val_folder_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.Tiny.normalize_tin_val_folder_structure" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TinyImageNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/Tiny.html#TinyImageNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.Tiny.TinyImageNet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ImageFolder</span></code></p>
+<p>Dataset for TinyImageNet-200</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.base_folder">
+<span class="sig-name descname"><span class="pre">base_folder</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tiny-imagenet-200'</span></em><a class="headerlink" href="#dataset.Tiny.TinyImageNet.base_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.zip_md5">
+<span class="sig-name descname"><span class="pre">zip_md5</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'90528d7ca1a48142e341f4ef8d21d0de'</span></em><a class="headerlink" href="#dataset.Tiny.TinyImageNet.zip_md5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.splits">
+<span class="sig-name descname"><span class="pre">splits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('train',</span> <span class="pre">'val')</span></em><a class="headerlink" href="#dataset.Tiny.TinyImageNet.splits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tiny-imagenet-200.zip'</span></em><a class="headerlink" href="#dataset.Tiny.TinyImageNet.filename" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'http://cs231n.stanford.edu/tiny-imagenet-200.zip'</span></em><a class="headerlink" href="#dataset.Tiny.TinyImageNet.url" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.dataset_folder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataset_folder</span></span><a class="headerlink" href="#dataset.Tiny.TinyImageNet.dataset_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.split_folder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">split_folder</span></span><a class="headerlink" href="#dataset.Tiny.TinyImageNet.split_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.extra_repr">
+<span class="sig-name descname"><span class="pre">extra_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/Tiny.html#TinyImageNet.extra_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.Tiny.TinyImageNet.extra_repr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dataset.Tiny.TinyImageNet.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dataset/Tiny.html#TinyImageNet.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dataset.Tiny.TinyImageNet.download" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dataset">
+<span id="contents"></span><h2>contents<a class="headerlink" href="#module-dataset" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../start/quickstart.html" class="btn btn-neutral float-left" title="Quick Start by Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="attack.html" class="btn btn-neutral float-right" title="Build Your Own Backdoor Attack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SCLBD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

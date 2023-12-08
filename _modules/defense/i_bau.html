@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>defense.i_bau &mdash; BackdoorBench v2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/mytheme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/js/version_alert.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/pyg_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../start/installation.html">Install and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../start/quickstart.html">Quick Start by Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/bddataset.html">Build Your Own Backdoor Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/attack.html">Build Your Own Backdoor Attack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/defense.html">Build Your Own Backdoor Defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">PACKAGE REFERENCE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/attack.html">packages of attack and defense</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Visualization</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/analysis_readme.html">Analysis Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization/Demo_FV.html">Demo_FV</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">BackdoorBench</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">defense.i_bau</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for defense.i_bau</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License</span>
+
+<span class="c1"># Copyright (c) 2021 Yi Zeng</span>
+
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This file is modified based on the following source:</span>
+<span class="sd">link : https://github.com/YiZeng623/I-BAU/</span>
+<span class="sd">The defense method is called i-bau.</span>
+<span class="sd">The license is bellow the code</span>
+
+<span class="sd">The update include:</span>
+<span class="sd">	1. data preprocess and dataset setting</span>
+<span class="sd">	2. model setting</span>
+<span class="sd">	3. args and config</span>
+<span class="sd">	4. save process</span>
+<span class="sd">	5. new standard: robust accuracy</span>
+<span class="sd">	6. use clean samples from training (align other defense Settings)</span>
+<span class="sd">basic sturcture for defense method:</span>
+<span class="sd">	1. basic setting: args</span>
+<span class="sd">	2. attack result(model, train data, test data)</span>
+<span class="sd">	3. i-bau defense:</span>
+<span class="sd">		a. get some clean data</span>
+<span class="sd">		b. unlearn the backdoor model by the pertubation</span>
+<span class="sd">	4. test the result and get ASR, ACC, RC </span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span><span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+
+<span class="c1"># # TODO:怎么查看包的相对路径和绝对路径</span>
+<span class="c1"># sys.path.append(&#39;../&#39;)</span>
+<span class="c1"># sys.path.append(os.getcwd())</span>
+
+<span class="c1"># # TODO:修改yaml文件</span>
+
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span>  <span class="n">pformat</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.defense.base</span> <span class="kn">import</span> <span class="n">defense</span>
+
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.train_settings_generate</span> <span class="kn">import</span> <span class="n">argparser_opt_scheduler</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.trainer_cls</span> <span class="kn">import</span> <span class="n">Metric_Aggregator</span><span class="p">,</span> <span class="n">PureCleanModelTrainer</span><span class="p">,</span> <span class="n">general_plot_for_epoch</span><span class="p">,</span> <span class="n">given_dataloader_test</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.choose_index</span> <span class="kn">import</span> <span class="n">choose_index</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.fix_random</span> <span class="kn">import</span> <span class="n">fix_random</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.model_trainer_generate</span> <span class="kn">import</span> <span class="n">generate_cls_model</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.log_assist</span> <span class="kn">import</span> <span class="n">get_git_info</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.aggregate_block.dataset_and_transform_generate</span> <span class="kn">import</span> <span class="n">get_input_shape</span><span class="p">,</span> <span class="n">get_num_classes</span><span class="p">,</span> <span class="n">get_transform</span><span class="p">,</span> <span class="n">get_dataset_normalization</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.save_load_attack</span> <span class="kn">import</span> <span class="n">load_attack_result</span><span class="p">,</span> <span class="n">save_defense_result</span>
+<span class="kn">from</span> <span class="nn">backdoorbench.utils.bd_dataset_v2</span> <span class="kn">import</span> <span class="n">prepro_cls_DatasetBD_v2</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">grad</span> <span class="k">as</span> <span class="n">torch_grad</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Based on the paper &#39;On the Iteration Complexity of Hypergradient Computation,&#39; this code was created.</span>
+<span class="sd">Source: https://github.com/prolearner/hypertorch/blob/master/hypergrad/hypergradients.py</span>
+<span class="sd">Original Author: Riccardo Grazzi</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">class</span> <span class="nc">DifferentiableOptimizer</span><span class="p">:</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_f</span><span class="p">,</span> <span class="n">dim_mult</span><span class="p">,</span> <span class="n">data_or_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">		</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Args:</span>
+<span class="sd">			loss_f: callable with signature (params, hparams, [data optional]) -&gt; loss tensor</span>
+<span class="sd">			data_or_iter: (x, y) or iterator over the data needed for loss_f</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">data_iterator</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="k">if</span> <span class="n">data_or_iter</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">data_iterator</span> <span class="o">=</span> <span class="n">data_or_iter</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_or_iter</span><span class="p">,</span> <span class="s1">&#39;__next__&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">repeat</span><span class="p">(</span><span class="n">data_or_iter</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">loss_f</span> <span class="o">=</span> <span class="n">loss_f</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">dim_mult</span> <span class="o">=</span> <span class="n">dim_mult</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">curr_loss</span> <span class="o">=</span> <span class="kc">None</span>
+
+	<span class="k">def</span> <span class="nf">get_opt_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+		<span class="n">opt_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+		<span class="n">opt_params</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_mult</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">])</span>
+		<span class="k">return</span> <span class="n">opt_params</span>
+
+	<span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">create_graph</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+	<span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+		<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">enable_grad</span><span class="p">():</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">create_graph</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">get_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">):</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_iterator</span><span class="p">:</span>
+			<span class="n">data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_iterator</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">curr_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_f</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">curr_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_f</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">curr_loss</span>
+
+<span class="k">class</span> <span class="nc">GradientDescent</span><span class="p">(</span><span class="n">DifferentiableOptimizer</span><span class="p">):</span>
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_f</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">data_or_iter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="nb">super</span><span class="p">(</span><span class="n">GradientDescent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss_f</span><span class="p">,</span> <span class="n">dim_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_or_iter</span><span class="o">=</span><span class="n">data_or_iter</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">step_size_f</span> <span class="o">=</span> <span class="n">step_size</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">step_size</span><span class="p">)</span> <span class="k">else</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">step_size</span>
+
+	<span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">create_graph</span><span class="p">):</span>
+		<span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+		<span class="n">sz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_size_f</span><span class="p">(</span><span class="n">hparams</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">gd_step</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="n">create_graph</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">gd_step</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="n">grads</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="n">create_graph</span><span class="p">)</span>
+	<span class="k">return</span> <span class="p">[</span><span class="n">w</span> <span class="o">-</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">g</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">grads</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">grad_unused_zero</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="n">grads</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">grad_outputs</span><span class="p">,</span> <span class="n">allow_unused</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+								<span class="n">retain_graph</span><span class="o">=</span><span class="n">retain_graph</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="n">create_graph</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">grad_or_zeros</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+		<span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">if</span> <span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">grad</span>
+
+	<span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">grad_or_zeros</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">get_outer_gradients</span><span class="p">(</span><span class="n">outer_loss</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="n">grad_outer_w</span> <span class="o">=</span> <span class="n">grad_unused_zero</span><span class="p">(</span><span class="n">outer_loss</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="n">retain_graph</span><span class="p">)</span>
+	<span class="n">grad_outer_hparams</span> <span class="o">=</span> <span class="n">grad_unused_zero</span><span class="p">(</span><span class="n">outer_loss</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="n">retain_graph</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">grad_outer_w</span><span class="p">,</span> <span class="n">grad_outer_hparams</span>
+
+<span class="k">def</span> <span class="nf">update_tensor_grads</span><span class="p">(</span><span class="n">hparams</span><span class="p">,</span> <span class="n">grads</span><span class="p">):</span>
+	<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hparams</span><span class="p">,</span> <span class="n">grads</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">l</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">l</span><span class="o">.</span><span class="n">grad</span> <span class="o">+=</span> <span class="n">g</span>
+
+
+<span class="k">def</span> <span class="nf">fixed_point</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span>
+				<span class="n">hparams</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span>
+				<span class="n">K</span><span class="p">:</span> <span class="nb">int</span> <span class="p">,</span>
+				<span class="n">fp_map</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]],</span>
+				<span class="n">outer_loss</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]],</span> <span class="n">Tensor</span><span class="p">],</span>
+				<span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
+				<span class="n">set_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+				<span class="n">stochastic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Computes the hypergradient by applying K steps of the fixed point method (it can end earlier when tol is reached).</span>
+<span class="sd">	Args:</span>
+<span class="sd">		params: the output of the inner solver procedure.</span>
+<span class="sd">		hparams: the outer variables (or hyperparameters), each element needs requires_grad=True</span>
+<span class="sd">		K: the maximum number of fixed point iterations</span>
+<span class="sd">		fp_map: the fixed point map which defines the inner problem</span>
+<span class="sd">		outer_loss: computes the outer objective taking parameters and hyperparameters as inputs</span>
+<span class="sd">		tol: end the method earlier when  the normed difference between two iterates is less than tol</span>
+<span class="sd">		set_grad: if True set t.grad to the hypergradient for every t in hparams</span>
+<span class="sd">		stochastic: set this to True when fp_map is not a deterministic function of its inputs</span>
+<span class="sd">	Returns:</span>
+<span class="sd">		the list of hypergradients for each element in hparams</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+
+	<span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+	<span class="n">o_loss</span> <span class="o">=</span> <span class="n">outer_loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+	<span class="n">grad_outer_w</span><span class="p">,</span> <span class="n">grad_outer_hparams</span> <span class="o">=</span> <span class="n">get_outer_gradients</span><span class="p">(</span><span class="n">o_loss</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">stochastic</span><span class="p">:</span>
+		<span class="n">w_mapped</span> <span class="o">=</span> <span class="n">fp_map</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+
+	<span class="n">vs</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+	<span class="n">vs_vec</span> <span class="o">=</span> <span class="n">cat_list_to_tensor</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+		<span class="n">vs_prev_vec</span> <span class="o">=</span> <span class="n">vs_vec</span>
+
+		<span class="k">if</span> <span class="n">stochastic</span><span class="p">:</span>
+			<span class="n">w_mapped</span> <span class="o">=</span> <span class="n">fp_map</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+			<span class="n">vs</span> <span class="o">=</span> <span class="n">torch_grad</span><span class="p">(</span><span class="n">w_mapped</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">vs</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">vs</span> <span class="o">=</span> <span class="n">torch_grad</span><span class="p">(</span><span class="n">w_mapped</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">vs</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+		<span class="n">vs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">+</span> <span class="n">gow</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">gow</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">grad_outer_w</span><span class="p">)]</span>
+		<span class="n">vs_vec</span> <span class="o">=</span> <span class="n">cat_list_to_tensor</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vs_vec</span> <span class="o">-</span> <span class="n">vs_prev_vec</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+			<span class="k">break</span>
+
+	<span class="k">if</span> <span class="n">stochastic</span><span class="p">:</span>
+		<span class="n">w_mapped</span> <span class="o">=</span> <span class="n">fp_map</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">hparams</span><span class="p">)</span>
+
+	<span class="n">grads</span> <span class="o">=</span> <span class="n">torch_grad</span><span class="p">(</span><span class="n">w_mapped</span><span class="p">,</span> <span class="n">hparams</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">vs</span><span class="p">,</span> <span class="n">allow_unused</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+	<span class="n">grads</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="o">+</span> <span class="n">v</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">v</span> <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">grad_outer_hparams</span><span class="p">)]</span>
+
+	<span class="k">if</span> <span class="n">set_grad</span><span class="p">:</span>
+		<span class="n">update_tensor_grads</span><span class="p">(</span><span class="n">hparams</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">grads</span>
+
+<span class="k">def</span> <span class="nf">cat_list_to_tensor</span><span class="p">(</span><span class="n">list_tx</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">xx</span> <span class="ow">in</span> <span class="n">list_tx</span><span class="p">])</span>
+
+<div class="viewcode-block" id="i_bau"><a class="viewcode-back" href="../../generated/defense.i_bau.html#defense.i_bau">[docs]</a><span class="k">class</span> <span class="nc">i_bau</span><span class="p">(</span><span class="n">defense</span><span class="p">):</span>
+<span class="w">	</span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Adversarial unlearning of backdoors via implicit hypergradient</span>
+<span class="sd">	</span>
+<span class="sd">	basic structure: </span>
+<span class="sd">	</span>
+<span class="sd">	1. config args, save_path, fix random seed</span>
+<span class="sd">	2. load the backdoor attack data and backdoor test data</span>
+<span class="sd">	3. load the backdoor model</span>
+<span class="sd">	4. i-bau defense:</span>
+<span class="sd">		a. train the adversarial purturbaion by the clean data using the hypergradient</span>
+<span class="sd">		b. unlearn the backdoor model by the pertubation</span>
+<span class="sd">		c. repeat a and b for several rounds</span>
+<span class="sd">	5. test the result and get ASR, ACC, RC </span>
+<span class="sd">	   </span>
+<span class="sd">	.. code-block:: python</span>
+<span class="sd">	</span>
+<span class="sd">		parser = argparse.ArgumentParser(description=sys.argv[0])</span>
+<span class="sd">		i_bau.add_arguments(parser)</span>
+<span class="sd">		args = parser.parse_args()</span>
+<span class="sd">		i_bau_method = i_bau(args)</span>
+<span class="sd">		if &quot;result_file&quot; not in args.__dict__:</span>
+<span class="sd">			args.result_file = &#39;one_epochs_debug_badnet_attack&#39;</span>
+<span class="sd">		elif args.result_file is None:</span>
+<span class="sd">			args.result_file = &#39;one_epochs_debug_badnet_attack&#39;</span>
+<span class="sd">		result = i_bau_method.defense(args.result_file)</span>
+<span class="sd">	</span>
+<span class="sd">	.. Note::</span>
+<span class="sd">		@article{zeng2021adversarial,</span>
+<span class="sd">		title={Adversarial unlearning of backdoors via implicit hypergradient},</span>
+<span class="sd">		author={Zeng, Yi and Chen, Si and Park, Won and Mao, Z Morley and Jin, Ming and Jia, Ruoxi},</span>
+<span class="sd">		journal={arXiv preprint arXiv:2110.03735},</span>
+<span class="sd">		year={2021}</span>
+<span class="sd">		}</span>
+
+<span class="sd">	Args:</span>
+<span class="sd">		baisc args: in the base class</span>
+<span class="sd">		ratio (float): the ratio of clean data loader</span>
+<span class="sd">		index (str): index of clean data</span>
+<span class="sd">		optim (str): type of outer loop optimizer utilized (default: Adam) to train the adversarial purturbaion</span>
+<span class="sd">		n_rounds (int): the maximum number of unlearning rounds and the number of fixed point iterations (default: 10)</span>
+<span class="sd">		K (int): the maximum number of fixed point iterations (default: 10)</span>
+<span class="sd">	&quot;&quot;&quot;</span> 
+
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parser</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()):</span>
+		<span class="nb">super</span><span class="p">(</span><span class="n">i_bau</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">add_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">parser</span><span class="p">):</span>
+		<span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+		<span class="c1">#set the parameter for the i-bau defense</span>
+		<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ratio&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;the ratio of clean data loader&#39;</span><span class="p">)</span>
+		<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--optim&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;type of outer loop optimizer utilized&#39;</span><span class="p">)</span>
+		<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--n_rounds&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;the maximum number of unelarning rounds&#39;</span><span class="p">)</span>
+		<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--K&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;the maximum number of fixed point iterations&#39;</span><span class="p">)</span>
+		<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--index&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;index of clean data&#39;</span><span class="p">)</span>
+	
+	<span class="k">def</span> <span class="nf">set_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="n">PureCleanModelTrainer</span><span class="p">(</span>
+			<span class="n">model</span><span class="p">,</span>
+		<span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">set_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="c1"># self.device = torch.device(</span>
+		<span class="c1"># 	(</span>
+		<span class="c1"># 		f&quot;cuda:{[int(i) for i in self.args.device[5:].split(&#39;,&#39;)][0]}&quot; if &quot;,&quot; in self.args.device else self.args.device</span>
+		<span class="c1"># 		# since DataParallel only allow .to(&quot;cuda&quot;)</span>
+		<span class="c1"># 	) if torch.cuda.is_available() else &quot;cpu&quot;</span>
+		<span class="c1"># )</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span>
+
+	<span class="k">def</span> <span class="nf">mitigation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">set_devices</span><span class="p">()</span>
+		<span class="n">fix_random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">random_seed</span><span class="p">)</span>
+
+		<span class="c1"># Prepare model, optimizer, scheduler</span>
+		<span class="n">model</span> <span class="o">=</span> <span class="n">generate_cls_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+		<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span>
+		<span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+			<span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span>
+				<span class="n">model</span><span class="p">,</span>
+				<span class="n">device_ids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>  <span class="c1"># eg. &quot;cuda:2,3,7&quot; -&gt; [2,3,7]</span>
+			<span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;cuda:</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">device_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+			<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+		<span class="c1">### TODO: opt</span>
+		<span class="n">outer_opt</span><span class="p">,</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="n">argparser_opt_scheduler</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">set_trainer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+		
+		<span class="c1"># a. get some clean data</span>
+		<span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;We use clean train data, the original paper use clean test data.&quot;</span><span class="p">)</span>
+		<span class="n">transforms_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">transforms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">)))</span>
+		<span class="n">transforms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">())</span>
+		<span class="n">transforms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_dataset_normalization</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">))</span>
+		<span class="n">tran</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span><span class="n">transforms_list</span><span class="p">)</span>
+		<span class="n">train_tran</span> <span class="o">=</span> <span class="n">get_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="o">*</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">])</span> <span class="p">,</span> <span class="n">train</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+		<span class="n">clean_dataset</span> <span class="o">=</span> <span class="n">prepro_cls_DatasetBD_v2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;clean_train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="p">)</span>
+		<span class="n">data_all_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_dataset</span><span class="p">)</span>
+		<span class="n">ran_idx</span> <span class="o">=</span> <span class="n">choose_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">data_all_length</span><span class="p">)</span> 
+		<span class="n">log_index</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">log</span> <span class="p">,</span> <span class="s1">&#39;index.txt&#39;</span><span class="p">)</span>
+		<span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">log_index</span><span class="p">,</span> <span class="n">ran_idx</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+		<span class="n">clean_dataset</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span><span class="n">ran_idx</span><span class="p">)</span>
+		<span class="n">data_set_without_tran</span> <span class="o">=</span> <span class="n">clean_dataset</span>
+		<span class="n">data_set_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;clean_train&#39;</span><span class="p">]</span>
+		<span class="n">data_set_o</span><span class="o">.</span><span class="n">wrapped_dataset</span> <span class="o">=</span> <span class="n">data_set_without_tran</span>
+		<span class="n">data_set_o</span><span class="o">.</span><span class="n">wrap_img_transform</span> <span class="o">=</span> <span class="n">train_tran</span>
+		<span class="c1"># data_set_o = prepro_cls_DatasetBD_v2(</span>
+		<span class="c1">#     full_dataset_without_transform=data_set,</span>
+		<span class="c1">#     poison_idx=np.zeros(len(data_set)),  # one-hot to determine which image may take bd_transform</span>
+		<span class="c1">#     bd_image_pre_transform=None,</span>
+		<span class="c1">#     bd_label_pre_transform=None,</span>
+		<span class="c1">#     ori_image_transform_in_loading=train_tran,</span>
+		<span class="c1">#     ori_label_transform_in_loading=None,</span>
+		<span class="c1">#     add_details_in_preprocess=False,</span>
+		<span class="c1"># )</span>
+		<span class="n">data_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">data_set_o</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">)</span>
+		<span class="n">trainloader</span> <span class="o">=</span> <span class="n">data_loader</span>
+		
+		<span class="n">test_tran</span> <span class="o">=</span> <span class="n">get_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="o">*</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">])</span> <span class="p">,</span> <span class="n">train</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+		<span class="n">data_bd_testset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;bd_test&#39;</span><span class="p">]</span>
+		<span class="n">data_bd_testset</span><span class="o">.</span><span class="n">wrap_img_transform</span> <span class="o">=</span> <span class="n">test_tran</span>
+		<span class="n">data_bd_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">data_bd_testset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span><span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">)</span>
+
+		<span class="n">data_clean_testset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;clean_test&#39;</span><span class="p">]</span>
+		<span class="n">data_clean_testset</span><span class="o">.</span><span class="n">wrap_img_transform</span> <span class="o">=</span> <span class="n">test_tran</span>
+		<span class="n">data_clean_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">data_clean_testset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span><span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">pin_memory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pin_memory</span><span class="p">)</span>
+
+		<span class="c1"># self.trainer.train_with_test_each_epoch(</span>
+		<span class="c1">#     train_data = trainloader,</span>
+		<span class="c1">#     test_data = data_clean_loader,</span>
+		<span class="c1">#     adv_test_data = data_bd_loader,</span>
+		<span class="c1">#     end_epoch_num = self.args.epochs,</span>
+		<span class="c1">#     criterion = criterion,</span>
+		<span class="c1">#     optimizer = optimizer,</span>
+		<span class="c1">#     scheduler = scheduler,</span>
+		<span class="c1">#     device = self.args.device,</span>
+		<span class="c1">#     frequency_save = self.args.frequency_save,</span>
+		<span class="c1">#     save_folder_path = self.args.checkpoint_save,</span>
+		<span class="c1">#     save_prefix = &#39;defense&#39;,</span>
+		<span class="c1">#     continue_training_path = None,</span>
+		<span class="c1"># )</span>
+		<span class="c1"># test_result(args,data_clean_loader,data_bd_loader,0,model,criterion)</span>
+
+		<span class="c1">### define the inner loss L2</span>
+		<span class="k">def</span> <span class="nf">loss_inner</span><span class="p">(</span><span class="n">perturb</span><span class="p">,</span> <span class="n">model_params</span><span class="p">):</span>
+			<span class="c1">### TODO: cpu training and multiprocessing</span>
+			<span class="n">images</span> <span class="o">=</span> <span class="n">images_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+			<span class="n">labels</span> <span class="o">=</span> <span class="n">labels_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+			<span class="c1">#per_img = torch.clamp(images+perturb[0],min=0,max=1)</span>
+			<span class="n">per_img</span> <span class="o">=</span> <span class="n">images</span><span class="o">+</span><span class="n">perturb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">per_logits</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">per_img</span><span class="p">)</span>
+			<span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">per_logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+			<span class="n">loss_regu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="n">loss</span><span class="p">)</span> <span class="o">+</span><span class="mf">0.001</span><span class="o">*</span><span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">perturb</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="mi">2</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">loss_regu</span>
+
+		<span class="c1">### define the outer loss L1</span>
+		<span class="k">def</span> <span class="nf">loss_outer</span><span class="p">(</span><span class="n">perturb</span><span class="p">,</span> <span class="n">model_params</span><span class="p">):</span>
+			<span class="c1">### TODO: cpu training and multiprocessing</span>
+			<span class="n">portion</span> <span class="o">=</span> <span class="mf">0.01</span>
+			<span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">images_list</span><span class="p">[</span><span class="n">batchnum</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">labels_list</span><span class="p">[</span><span class="n">batchnum</span><span class="p">]</span><span class="o">.</span><span class="n">long</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+			<span class="n">patching</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+			<span class="n">number</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">rand_idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">number</span><span class="p">)),</span><span class="nb">int</span><span class="p">(</span><span class="n">number</span><span class="o">*</span><span class="n">portion</span><span class="p">))</span>
+			<span class="n">patching</span><span class="p">[</span><span class="n">rand_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">perturb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="c1">#unlearn_imgs = torch.clamp(images+patching,min=0,max=1)</span>
+			<span class="n">unlearn_imgs</span> <span class="o">=</span> <span class="n">images</span><span class="o">+</span><span class="n">patching</span>
+			<span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">unlearn_imgs</span><span class="p">)</span>
+			<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+			<span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">loss</span>
+
+		<span class="n">images_list</span><span class="p">,</span> <span class="n">labels_list</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">original_index</span><span class="p">,</span> <span class="n">poison_indicator</span><span class="p">,</span> <span class="n">original_targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trainloader</span><span class="p">):</span>
+			<span class="n">images_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+			<span class="n">labels_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+		<span class="n">inner_opt</span> <span class="o">=</span> <span class="n">GradientDescent</span><span class="p">(</span><span class="n">loss_inner</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+		<span class="n">train_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">train_mix_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">train_clean_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">train_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">train_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="n">clean_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">bd_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">ra_test_loss_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">test_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">test_asr_list</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">test_ra_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="c1"># b. unlearn the backdoor model by the pertubation</span>
+		<span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&gt; Conducting Defence..&quot;</span><span class="p">)</span>
+		<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+		<span class="n">agg</span> <span class="o">=</span> <span class="n">Metric_Aggregator</span><span class="p">()</span>
+		<span class="k">for</span> <span class="nb">round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">n_rounds</span><span class="p">):</span>
+			<span class="c1"># batch_pert = torch.zeros_like(data_clean_testset[0][:1], requires_grad=True, device=args.device)</span>
+			<span class="n">batch_pert</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="n">args</span><span class="o">.</span><span class="n">input_channel</span><span class="p">,</span><span class="n">args</span><span class="o">.</span><span class="n">input_height</span><span class="p">,</span><span class="n">args</span><span class="o">.</span><span class="n">input_width</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+			<span class="n">batch_opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">batch_pert</span><span class="p">],</span><span class="n">lr</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+		
+			<span class="k">for</span> <span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">original_index</span><span class="p">,</span> <span class="n">poison_indicator</span><span class="p">,</span> <span class="n">original_targets</span> <span class="ow">in</span> <span class="n">trainloader</span><span class="p">:</span>
+				<span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+				<span class="n">ori_lab</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">images</span><span class="p">),</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+				<span class="c1"># per_logits = model.forward(torch.clamp(images+batch_pert,min=0,max=1))</span>
+				<span class="n">per_logits</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">images</span><span class="o">+</span><span class="n">batch_pert</span><span class="p">)</span>
+				<span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">per_logits</span><span class="p">,</span> <span class="n">ori_lab</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+				<span class="n">loss_regu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="n">loss</span><span class="p">)</span> <span class="o">+</span><span class="mf">0.001</span><span class="o">*</span><span class="n">torch</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">batch_pert</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+				<span class="n">batch_opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+				<span class="n">loss_regu</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">retain_graph</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+				<span class="n">batch_opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+			<span class="c1">#l2-ball</span>
+			<span class="c1"># pert = batch_pert * min(1, 10 / torch.norm(batch_pert))</span>
+			<span class="n">pert</span> <span class="o">=</span> <span class="n">batch_pert</span>
+
+			<span class="c1">#unlearn step         </span>
+			<span class="k">for</span> <span class="n">batchnum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">images_list</span><span class="p">)):</span> 
+				<span class="n">outer_opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+				<span class="n">fixed_point</span><span class="p">(</span><span class="n">pert</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()),</span> <span class="n">args</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">inner_opt</span><span class="p">,</span> <span class="n">loss_outer</span><span class="p">)</span> 
+				<span class="n">outer_opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+			
+			<span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span> \
+			<span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span> \
+			<span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span> \
+			<span class="n">test_acc</span><span class="p">,</span> \
+			<span class="n">test_asr</span><span class="p">,</span> \
+			<span class="n">test_ra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_step</span><span class="p">(</span>
+				<span class="n">model</span><span class="p">,</span>
+				<span class="n">data_clean_loader</span><span class="p">,</span>
+				<span class="n">data_bd_loader</span><span class="p">,</span>
+				<span class="n">args</span><span class="p">,</span>
+			<span class="p">)</span>
+
+			<span class="n">agg</span><span class="p">({</span>
+				<span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">,</span>
+
+				<span class="s2">&quot;clean_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span>
+				<span class="s2">&quot;bd_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span>
+				<span class="s2">&quot;ra_test_loss_avg_over_batch&quot;</span><span class="p">:</span> <span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span>
+				<span class="s2">&quot;test_acc&quot;</span><span class="p">:</span> <span class="n">test_acc</span><span class="p">,</span>
+				<span class="s2">&quot;test_asr&quot;</span><span class="p">:</span> <span class="n">test_asr</span><span class="p">,</span>
+				<span class="s2">&quot;test_ra&quot;</span><span class="p">:</span> <span class="n">test_ra</span><span class="p">,</span>
+			<span class="p">})</span>
+
+
+			<span class="n">clean_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clean_test_loss_avg_over_batch</span><span class="p">)</span>
+			<span class="n">bd_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bd_test_loss_avg_over_batch</span><span class="p">)</span>
+			<span class="n">ra_test_loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ra_test_loss_avg_over_batch</span><span class="p">)</span>
+			<span class="n">test_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_acc</span><span class="p">)</span>
+			<span class="n">test_asr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_asr</span><span class="p">)</span>
+			<span class="n">test_ra_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_ra</span><span class="p">)</span>
+
+			<span class="n">general_plot_for_epoch</span><span class="p">(</span>
+				<span class="p">{</span>
+					<span class="s2">&quot;Test C-Acc&quot;</span><span class="p">:</span> <span class="n">test_acc_list</span><span class="p">,</span>
+					<span class="s2">&quot;Test ASR&quot;</span><span class="p">:</span> <span class="n">test_asr_list</span><span class="p">,</span>
+					<span class="s2">&quot;Test RA&quot;</span><span class="p">:</span> <span class="n">test_ra_list</span><span class="p">,</span>
+				<span class="p">},</span>
+				<span class="n">save_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;i-bau_acc_like_metric_plots.png&quot;</span><span class="p">),</span>
+				<span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
+			<span class="p">)</span>
+
+			<span class="n">general_plot_for_epoch</span><span class="p">(</span>
+				<span class="p">{</span>
+					<span class="s2">&quot;Test Clean Loss&quot;</span><span class="p">:</span> <span class="n">clean_test_loss_list</span><span class="p">,</span>
+					<span class="s2">&quot;Test Backdoor Loss&quot;</span><span class="p">:</span> <span class="n">bd_test_loss_list</span><span class="p">,</span>
+					<span class="s2">&quot;Test RA Loss&quot;</span><span class="p">:</span> <span class="n">ra_test_loss_list</span><span class="p">,</span>
+				<span class="p">},</span>
+				<span class="n">save_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;i-bau_loss_metric_plots.png&quot;</span><span class="p">),</span>
+				<span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;percentage&quot;</span><span class="p">,</span>
+			<span class="p">)</span>
+
+			<span class="n">agg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;i-bau_df.csv&quot;</span><span class="p">))</span>
+		<span class="n">agg</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;i-bau_df_summary.csv&quot;</span><span class="p">))</span>
+		<span class="c1"># self.trainer.train_with_test_each_epoch_on_mix(</span>
+		<span class="c1">#     trainloader,</span>
+		<span class="c1">#     data_clean_loader,</span>
+		<span class="c1">#     data_bd_loader,</span>
+		<span class="c1">#     args.epochs,</span>
+		<span class="c1">#     criterion=criterion,</span>
+		<span class="c1">#     optimizer=optimizer,</span>
+		<span class="c1">#     scheduler=scheduler,</span>
+		<span class="c1">#     device=self.device,</span>
+		<span class="c1">#     frequency_save=args.frequency_save,</span>
+		<span class="c1">#     save_folder_path=args.save_path,</span>
+		<span class="c1">#     save_prefix=&#39;i-bau&#39;,</span>
+		<span class="c1">#     amp=args.amp,</span>
+		<span class="c1">#     prefetch=args.prefetch,</span>
+		<span class="c1">#     prefetch_transform_attr_name=&quot;ori_image_transform_in_loading&quot;, # since we use the preprocess_bd_dataset</span>
+		<span class="c1">#     non_blocking=args.non_blocking,</span>
+		<span class="c1"># )</span>
+		
+		<span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">result</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+		<span class="n">save_defense_result</span><span class="p">(</span>
+			<span class="n">model_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+			<span class="n">num_classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+			<span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+			<span class="n">save_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span>
+		<span class="p">)</span>
+		<span class="k">return</span> <span class="n">result</span>
+
+	<span class="k">def</span> <span class="nf">eval_step</span><span class="p">(</span>
+			<span class="bp">self</span><span class="p">,</span>
+			<span class="n">netC</span><span class="p">,</span>
+			<span class="n">clean_test_dataloader</span><span class="p">,</span>
+			<span class="n">bd_test_dataloader</span><span class="p">,</span>
+			<span class="n">args</span><span class="p">,</span>
+	<span class="p">):</span>
+		<span class="n">clean_metrics</span><span class="p">,</span> <span class="n">clean_epoch_predict_list</span><span class="p">,</span> <span class="n">clean_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+			<span class="n">netC</span><span class="p">,</span>
+			<span class="n">clean_test_dataloader</span><span class="p">,</span>
+			<span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+			<span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+			<span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+			<span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+		<span class="p">)</span>
+		<span class="n">clean_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+		<span class="n">test_acc</span> <span class="o">=</span> <span class="n">clean_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+		<span class="n">bd_metrics</span><span class="p">,</span> <span class="n">bd_epoch_predict_list</span><span class="p">,</span> <span class="n">bd_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+			<span class="n">netC</span><span class="p">,</span>
+			<span class="n">bd_test_dataloader</span><span class="p">,</span>
+			<span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+			<span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+			<span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+			<span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+		<span class="p">)</span>
+		<span class="n">bd_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+		<span class="n">test_asr</span> <span class="o">=</span> <span class="n">bd_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+
+		<span class="n">bd_test_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="o">.</span><span class="n">getitem_all_switch</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># change to return the original label instead</span>
+		<span class="n">ra_metrics</span><span class="p">,</span> <span class="n">ra_epoch_predict_list</span><span class="p">,</span> <span class="n">ra_epoch_label_list</span> <span class="o">=</span> <span class="n">given_dataloader_test</span><span class="p">(</span>
+			<span class="n">netC</span><span class="p">,</span>
+			<span class="n">bd_test_dataloader</span><span class="p">,</span>
+			<span class="n">criterion</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(),</span>
+			<span class="n">non_blocking</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">non_blocking</span><span class="p">,</span>
+			<span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+			<span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+		<span class="p">)</span>
+		<span class="n">ra_test_loss_avg_over_batch</span> <span class="o">=</span> <span class="n">ra_metrics</span><span class="p">[</span><span class="s1">&#39;test_loss_avg_over_batch&#39;</span><span class="p">]</span>
+		<span class="n">test_ra</span> <span class="o">=</span> <span class="n">ra_metrics</span><span class="p">[</span><span class="s1">&#39;test_acc&#39;</span><span class="p">]</span>
+		<span class="n">bd_test_dataloader</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">wrapped_dataset</span><span class="o">.</span><span class="n">getitem_all_switch</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># switch back</span>
+
+		<span class="k">return</span> <span class="n">clean_test_loss_avg_over_batch</span><span class="p">,</span> \
+				<span class="n">bd_test_loss_avg_over_batch</span><span class="p">,</span> \
+				<span class="n">ra_test_loss_avg_over_batch</span><span class="p">,</span> \
+				<span class="n">test_acc</span><span class="p">,</span> \
+				<span class="n">test_asr</span><span class="p">,</span> \
+				<span class="n">test_ra</span>
+
+	<span class="k">def</span> <span class="nf">defense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">result_file</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">result_file</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">set_logger</span><span class="p">()</span>
+		<span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mitigation</span><span class="p">()</span>
+		<span class="k">return</span> <span class="n">result</span></div>
+	
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+	<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+	<span class="n">i_bau</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+	<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+	<span class="n">i_bau_method</span> <span class="o">=</span> <span class="n">i_bau</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+	<span class="k">if</span> <span class="s2">&quot;result_file&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">result_file</span> <span class="o">=</span> <span class="s1">&#39;defense_test_badnet&#39;</span>
+	<span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">result_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">args</span><span class="o">.</span><span class="n">result_file</span> <span class="o">=</span> <span class="s1">&#39;defense_test_badnet&#39;</span>
+	<span class="n">result</span> <span class="o">=</span> <span class="n">i_bau_method</span><span class="o">.</span><span class="n">defense</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">result_file</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, SCLBD.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
